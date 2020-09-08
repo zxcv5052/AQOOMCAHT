@@ -19,7 +19,7 @@ module.exports = (sequelize, Sequelize) => {
     },{
         timestamps: true,
         uniqueKeys: {
-            restriction_words_unique: {
+            restriction_urls_unique: {
                 fields: ['url_pattern', 'chat_id']
             }
         }
