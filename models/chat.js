@@ -1,5 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
     const chat = sequelize.define('chat', {
+        id:{
+            type: Sequelize.BIGINT,
+            primaryKey: true
+        },
         type:{
             type: Sequelize.ENUM({
                 values: [ 'private','group','supergroup','channel' ]

@@ -1,17 +1,20 @@
 const db = require("../models");
 const Words = db.restriction_words;
 
+const sequelize = require("sequelize");
+const Op = sequelize.Op;
+
 // Create and Save a new Word
 exports.create = (request, response) => {
-    if (!request.body.word_name) {
+    if (!request) {
         response.status(400).send({
             message: "Content can not be empty!"
         });
         return;
     }
     const words = {
-        word_name: request.body.word_name,
-        chat_id: request.body.chat_id,
+        word_name: request,
+        chat_id: request,
     };
     Words.create(words)
         .then(num=>{
@@ -24,17 +27,22 @@ exports.create = (request, response) => {
         });
 };
 
-exports.findByChatId = (request, response) => {
-    const chat_id = request.params.chat_id;
-    const condition = chat_id ? { chat_id: chat_id } : null;
+exports.findByChatId = (request) => {
+    let chat_id = request.chat_id;
 
-    Words.findAll({where: condition})
-        .then(data => {
-            response.send(data);
+    return new Promise(async (resolve, reject) => {
+        Words.findAll({
+            raw: true,
+            where: {chat_id: chat_id},
+            attributes: ['word_name']
         })
-        .catch(err=> {
-            response.status(500).send(false)
-        });
+            .then(data => {
+                resolve(data);
+            })
+            .catch(err=> {
+                reject(new Error(err));
+            });
+    })
 }
 
 // Delete a Tutorial with the specified id in the request
