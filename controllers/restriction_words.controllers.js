@@ -51,7 +51,7 @@ exports.delete = (request, response) => {
 
     Words.destroy({where: {id: id}})
         .then(num =>{
-            if (num === 1) {
+            if (num) {
                 response.status(200).send({
                     message: "Words was deleted successfully!"
                 });
