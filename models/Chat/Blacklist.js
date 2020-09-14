@@ -1,15 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
     const Chat_blacklist = sequelize.define('Chat_blacklist', {
         blacklist_seq:{
-            type: Sequelize.INT(50),
+            type: Sequelize.INTEGER(50),
             primaryKey: true
         },
         word: {
             type: Sequelize.STRING(50)
-        },
-        chat_id: {
-            type: Sequelize.BIGINT(20),
-            allowNull: false
         },
         is_active: {
             type: Sequelize.BOOLEAN,
@@ -17,6 +13,7 @@ module.exports = (sequelize, Sequelize) => {
         }
     },{
         timestamps: false,
+        freezeTableName: true,
 
         uniqueKeys: {
             restriction_words_unique: {

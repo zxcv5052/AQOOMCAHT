@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
     const Chat_FAQ = sequelize.define('Chat_FAQ', {
         faq_seq:{
-            type: Sequelize.INT(50),
+            type: Sequelize.INTEGER(50),
             primaryKey: true
         },
         content:{
@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TINYINT
         },
         enabled_condition:{
-            type: Sequelize.SMALLINT(3)
+            type: Sequelize.BOOLEAN
         },
         button:{
             type: Sequelize.STRING(255)

@@ -1,20 +1,21 @@
 module.exports = (sequelize, Sequelize) => {
     const Chat_timezone = sequelize.define('Chat_timezone', {
         timezone_seq:{
-            type: Sequelize.INT(50),
+            type: Sequelize.INTEGER,
             primaryKey: true
         },
         timezone:{
             type: Sequelize.STRING(255)
         },
         offset: {
-            type: Sequelize.INT(10),
+            type: Sequelize.INTEGER(10),
         },
         tz_pos:{
-            type: Sequelize.INT(2)
+            type: Sequelize.INTEGER(2)
         }
     },{
         timestamps: false,
+        freezeTableName: true
     });
 
     return Chat_timezone;

@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
     const Chat_greeting = sequelize.define('Chat_greeting', {
         greeting_seq:{
-            type: Sequelize.INT(50),
+            type: Sequelize.INTEGER(50),
             primaryKey: true
         },
         greeting_text:{
@@ -20,7 +20,8 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING(250)
         }
     },{
-        timestamps: true
+        timestamps: true,
+        freezeTableName: true
     });
 
     return Chat_greeting;
