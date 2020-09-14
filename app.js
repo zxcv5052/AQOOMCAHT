@@ -40,20 +40,25 @@ app.use(function(req, res, next) {
 const { Telegraf } = require('telegraf')
 const bot = new Telegraf(require('./config/botkey.json').test_botKey)
 const telegrafGetChatMembers = require('telegraf-getchatmembers');
-const restriction_words = require('./controllers/restriction_words.controllers')
 
 bot.use(telegrafGetChatMembers);
 
-bot.start((ctx) => ctx.reply('Welcome'))
-bot.help((ctx) => ctx.reply('Send me a sticker'))
-bot.on('sticker', (ctx) => ctx.reply('👍'))
+bot.on('group_chat_created', ctx => {
+    console.log(ctx.message);
+})
+bot.on('supergroup_chat_created', ctx => {
+    console.log(ctx.message);
+})
+bot.on('channel_chat_created', ctx => {
+    console.log(ctx.message);
+})
+bot.on('message', ctx => {
+    console.log(ctx.message);
+})
 
-bot.command('oldschool', (ctx) => ctx.reply('Hello'))
-bot.command('modern', ({ reply }) => reply('Yo'))
-bot.command('hipster', Telegraf.reply('λ'))
 bot.on('text',  async ctx => {
     const request = {
-        chat_id: ctx.chat.id,
+        chat_id: ctx.chat.id
     }
     try{
         const words = (await restriction_words.findByChatId(request));

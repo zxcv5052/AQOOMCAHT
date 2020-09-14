@@ -2,6 +2,7 @@ module.exports = (sequelize, Sequelize) => {
     const Chat_blacklist = sequelize.define('Chat_blacklist', {
         blacklist_seq:{
             type: Sequelize.INTEGER(50),
+            autoIncrement: true,
             primaryKey: true
         },
         word: {

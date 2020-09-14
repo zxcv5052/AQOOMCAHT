@@ -9,21 +9,55 @@ const router = express.Router();
  * Method : GET
  * origin : '/getWordData'
  */
-router.get('/restriction/words/:chat_id', restriction_words.findByChatId);
+router.get('/restriction/words/:chat_id', (req,res) => {
+    const request = {
+        chat_id : req.params.chat_id
+    };
+    restriction_words.findByChatId(request)
+        .then(result=>{
+            res.send(result);
+        })
+        .catch(()=>{
+            res.send("false");
+        });
+});
 
 /**
  * path : 'address/options/restriction/words/
  * Method : POST
  * origin : '/pushWordData'
  */
-router.post('/restriction/words/', restriction_words.create);
+router.post('/restriction/words/', (req,res) => {
+    const request = {
+        chat_id : req.body.chat_id,
+        word : req.body.word
+    };
+    restriction_words.create(request)
+        .then(result =>{
+            res.send("true")
+        })
+        .catch(err => {
+            res.status(500).send(err)
+        })
+});
 
 /**
  * path : 'address/options/restriction/words/<pk>'
  * Method : DELETE
  * origin : '/delWordData'
  */
-router.delete('/restriction/words/:id', restriction_words.delete);
+router.delete('/restriction/words/:blacklist_seq', (req, res) =>{
+    const request = {
+        blacklist_seq :req.params.blacklist_seq
+    }
+    restriction_words.delete(request)
+        .then(result =>{
+            res.send("true")
+        })
+        .catch(err =>{
+            res.status(500).send(err);
+        })
+});
 
 /**
  * path: 'address/options/whitelist/urls
