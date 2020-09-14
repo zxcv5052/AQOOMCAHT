@@ -14,27 +14,20 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 /**
  * SET Models
  */
-db.chat = require("./Chat")(sequelize, Sequelize);
-db.users = require("./users")(sequelize,Sequelize);
-db.whitelist_urls = require("./whitelist_urls")(sequelize, Sequelize);
-db.restriction_words = require("./restriction_words")(sequelize, Sequelize);
-db.whitelist_users = require("./whitelist_users")(sequelize,Sequelize);
+db.Chat = require("./Chat")(sequelize, Sequelize);
+db.Message = require("./Message")(sequelize,Sequelize);
+db.User = require("./User")(sequelize,Sequelize);
 
 /**
  * SET relation
  */
-db.whitelist_urls.belongsTo(db.chat, {
+db.Message.belongsTo(db.Chat, {
     foreignKey: "chat_id",
-    as: "chat"
+    as: "Chat"
 })
-db.restriction_words.belongsTo(db.chat, {
-  foreignKey: "chat_id",
-  as: "chat",
-});
-
-db.whitelist_users.belongsTo(db.chat, {
-    foreignKey: "chat_id",
-    as: "chat",
+db.Message.belongsTo(db.User, {
+  foreignKey: "user_id",
+  as: "User",
 });
 
 db.sequelize = sequelize;

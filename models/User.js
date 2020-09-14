@@ -1,43 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define('User', {
-        is_bot:{
-            type: Sequelize.BOOLEAN
-        },
-        is_admin:{
-            type: Sequelize.BOOLEAN
-        },
-        is_new:{
-            type: Sequelize.BOOLEAN
-        },
-        first_name:{
-            type: Sequelize.STRING(255)
-        },
-        last_name:{
-            type: Sequelize.STRING
-        },
-        username:{
-            type: Sequelize.STRING
-        },
-        language_code:{
-            type: Sequelize.STRING
-        },
-        created_at:{
-            type: Sequelize.DATE
-        },
-        updated_at:{
-            type: Sequelize.DATE
-        },
-        warning_pt:{
-            type: Sequelize.INTEGER
-        },
-        score:{
+        user_id:{
+            primaryKey: true,
             type: Sequelize.BIGINT
         },
-        restricted_time:{
-            type: Sequelize.DATE
+        first_name:{
+            type: Sequelize.STRING(50)
+        },
+        last_name:{
+            type: Sequelize.STRING(50)
+        },
+        user_name:{
+            type: Sequelize.STRING(50)
         }
     },{
-        timestamps: false,
+        timestamps: true,
         freezeTableName: true
     });
 

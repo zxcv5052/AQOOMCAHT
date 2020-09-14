@@ -1,75 +1,57 @@
 module.exports = (sequelize, Sequelize) => {
-    const chat = sequelize.define('chat', {
-        id:{
+    const Chat = sequelize.define('Chat', {
+        chat_id:{
             type: Sequelize.BIGINT,
             primaryKey: true
         },
         type:{
+            allowNull: false,
             type: Sequelize.ENUM({
                 values: [ 'private','group','supergroup','channel' ]
             })
         },
-        title:{
+        group_name:{
             type: Sequelize.STRING(255)
         },
-        username:{
-            type: Sequelize.STRING(255)
+        creator_name:{
+            type: Sequelize.STRING(50)
         },
-        first_name:{
-            type: Sequelize.STRING(255)
+        anti_image:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        last_name:{
-            type: Sequelize.STRING(255)
+        anti_url:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        username:{
-            type: Sequelize.STRING(255)
+        anti_forward:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        all_members_are_administrators:{
-            type: Sequelize.BOOLEAN
+        anti_join_message:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        created_at:{
-            type: Sequelize.DATE
+        anti_left_message:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        updated_at:{
-            type: Sequelize.DATE
+        anti_longname:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        old_id:{
-            type: Sequelize.INTEGER
+        anti_flood:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         },
-        depence_count:{
-            type: Sequelize.BIGINT
-        },
-        is_active:{
-            type: Sequelize.DATE
-        },
-        is_block_bot:{
-            type: Sequelize.BOOLEAN
-        },
-        is_block_invite:{
-            type: Sequelize.BOOLEAN
-        },
-        is_restrict_new_member:{
-            type: Sequelize.BOOLEAN
-        },
-        is_img_filter:{
-            type: Sequelize.BOOLEAN
-        },
-        is_ordering_comeout:{
-            type: Sequelize.BOOLEAN
-        },
-        activation_code:{
-            type: Sequelize.STRING
-        },
-        count_msgs:{
-            type: Sequelize.INTEGER
-        },
-        restriction_time:{
-            type: Sequelize.DATE
+        anti_command:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         }
     },{
-        timestamps: false,
+        timestamps: true,
         freezeTableName: true
     });
 
-    return chat;
+    return Chat;
 }
