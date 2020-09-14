@@ -14,7 +14,7 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 /**
  * SET Models
  */
-db.chat = require("./chat")(sequelize, Sequelize);
+db.chat = require("./Chat")(sequelize, Sequelize);
 db.users = require("./users")(sequelize,Sequelize);
 db.whitelist_urls = require("./whitelist_urls")(sequelize, Sequelize);
 db.restriction_words = require("./restriction_words")(sequelize, Sequelize);

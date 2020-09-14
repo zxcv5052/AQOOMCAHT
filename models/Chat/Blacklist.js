@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const restriction_words = sequelize.define('restriction_words', {
+    const Chat_blacklist = sequelize.define('Chat_blacklist', {
         word_name: {
             type: Sequelize.STRING(255),
             allowNull: false,
@@ -23,5 +23,5 @@ module.exports = (sequelize, Sequelize) => {
         }
     });
 
-    return restriction_words;
+    return Chat_blacklist;
 }

@@ -33,7 +33,6 @@ app.use(function(req, res, next) {
     next(createError(404));
 });
 
-
 /**
  * For Telegram bot Hook
  */
@@ -52,10 +51,6 @@ bot.on('sticker', (ctx) => ctx.reply('👍'))
 bot.command('oldschool', (ctx) => ctx.reply('Hello'))
 bot.command('modern', ({ reply }) => reply('Yo'))
 bot.command('hipster', Telegraf.reply('λ'))
-
-bot.on('message', ctx=>{
-    console.log(ctx);
-})
 bot.on('text',  async ctx => {
     const request = {
         chat_id: ctx.chat.id,

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const user = sequelize.define('user', {
+    const User = sequelize.define('User', {
         is_bot:{
             type: Sequelize.BOOLEAN
         },
@@ -41,5 +41,5 @@ module.exports = (sequelize, Sequelize) => {
         freezeTableName: true
     });
 
-    return user;
+    return User;
 }
