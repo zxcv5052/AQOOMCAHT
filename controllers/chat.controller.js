@@ -1,27 +1,25 @@
 const db = require("../models");
-const ChatRoom = db.chat;
+const Chat = db.Chat;
 
-// Create and Save a new Word
 exports.create = (request) => {
-    if (!request) {
-        response.status(400).send({
-            message: "Content can not be empty!"
-        });
-        return;
-    }
     const chat = {
-        id: request.id,
+        chat_id: request.chat_id,
         type: request.type,
+        group_name: request.group_name,
         title: request.title,
-        user_name: request.user_name,
+        creator_name: request.creator_name
     };
-    ChatRoom.create(chat)
-        .then(num=>{
-            response.status(200).send(true)
-        })
-        .catch( err => {
-            response.status(500).send({
-                message: "Cannot Create Room. Maybe Room was already exist!"
+    return new Promise(async (resolve, reject) => {
+        Chat.create(chat)
+            .then(()=>{
+                resolve();
+            })
+            .catch( () => {
+                reject("Cannot Create Room. Maybe Room was already exist!")
             });
-        });
+    });
 };
+
+exports.update = () => {
+        Chat.update();
+}

@@ -1,8 +1,8 @@
+'use strict'
 const express = require('express');
-const restriction_words = require('../controllers/restriction_words.controllers');
-const whitelist_urls = require('../controllers/whitelist_urls.controllers');
+const chat_blacklist = require('../controllers/chat_blacklist');
+const user_chat_whitelist = require('../controllers/user_chat_whitelist');
 const router = express.Router();
-
 
 /**
  * path : 'address/options/restriction/words/<chat_id>
@@ -13,7 +13,7 @@ router.get('/restriction/words/:chat_id', (req,res) => {
     const request = {
         chat_id : req.params.chat_id
     };
-    restriction_words.findByChatId(request)
+    chat_blacklist.findByChatId(request)
         .then(result=>{
             res.send(result);
         })
@@ -32,8 +32,8 @@ router.post('/restriction/words/', (req,res) => {
         chat_id : req.body.chat_id,
         word : req.body.word
     };
-    restriction_words.create(request)
-        .then(result =>{
+    chat_blacklist.create(request)
+        .then(() =>{
             res.send("true")
         })
         .catch(err => {
@@ -50,8 +50,8 @@ router.delete('/restriction/words/:blacklist_seq', (req, res) =>{
     const request = {
         blacklist_seq :req.params.blacklist_seq
     }
-    restriction_words.delete(request)
-        .then(result =>{
+    chat_blacklist.delete(request)
+        .then(() =>{
             res.send("true")
         })
         .catch(err =>{
@@ -60,26 +60,59 @@ router.delete('/restriction/words/:blacklist_seq', (req, res) =>{
 });
 
 /**
- * path: 'address/options/whitelist/urls
+ * path: 'address/options/whitelist/user
  * Method : POST
  * origin : '/pushWhitelist'
  */
-router.post('/whitelist/urls/', whitelist_urls.create);
+router.post('/whitelist/user/', (req, res) => {
+    const request = {
+        user_id : req.body.user_id,
+        chat_id : req.body.chat_id
+    }
+    user_chat_whitelist.create(request)
+        .then(()=>{
+            res.status(200).send("ok");
+        })
+        .catch(err =>{
+            res.status(500).send(err);
+        })
+});
 
 /**
- * path: 'address/options/whitelist/urls/<chat_id>'
+ * path: 'address/options/whitelist/user/<chat_id>'
  * Method : GET
  * origin : '/getWhitelist'
  */
-router.get('/whitelist/urls/:chat_id', whitelist_urls.findByChatId);
+
+router.get('/whitelist/user/:chat_id', (req, res) => {
+    const request = {
+        chat_id : req.params.chat_id
+    };
+    user_chat_whitelist.findByChatId(request)
+        .then(()=>{
+            res.status(200).send("ok")
+        })
+        .catch(err =>{
+            res.status(500).send(err);
+        })
+});
 
 /**
- * path: 'address/options/whitelist/urls/<pk>'
+ * path: 'address/options/whitelist/user/<pk>'
  * Method : Delete
  * origin : '/delWhitelist'
  */
-router.delete('/whitelist/urls/:id', whitelist_urls.delete);
-
-
+router.delete('/whitelist/user/:seq', (req, res) =>{
+    const request = {
+        seq : req.params.seq
+    };
+    user_chat_whitelist.delete(request)
+        .then(()=>{
+            res.status(200).send("ok")
+        })
+        .catch(err=>{
+            res.status(500).send(err)
+        })
+});
 
 module.exports = router;

@@ -40,11 +40,12 @@ app.use(function(req, res, next) {
 const { Telegraf } = require('telegraf')
 const bot = new Telegraf(require('./config/botkey.json').test_botKey)
 const telegrafGetChatMembers = require('telegraf-getchatmembers');
+const chatDAO = require('/controllers/chat.controller');
 
 bot.use(telegrafGetChatMembers);
 
 bot.on('group_chat_created', ctx => {
-    console.log(ctx.message);
+
 })
 bot.on('supergroup_chat_created', ctx => {
     console.log(ctx.message);
