@@ -4,6 +4,9 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             type: Sequelize.INTEGER(20),
             autoIncrement: true
+        },
+        warning_pt:{
+            type: Sequelize.INTEGER(10)
         }
     },{
         timestamps: false,

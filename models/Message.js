@@ -9,10 +9,13 @@ module.exports = (sequelize, Sequelize) => {
         },
         message:{
             type: Sequelize.TEXT
+        },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
         }
-
     },{
-        timestamps: true,
         freezeTableName: true
     });
 

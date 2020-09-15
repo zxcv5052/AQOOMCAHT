@@ -39,46 +39,43 @@ app.use(function(req, res, next) {
 
 const { Telegraf } = require('telegraf')
 const bot = new Telegraf(require('./config/botkey.json').test_botKey)
-const telegrafGetChatMembers = require('telegraf-getchatmembers');
-const chatDAO = require('/controllers/chat.controller');
 
-bot.use(telegrafGetChatMembers);
-
-bot.on('group_chat_created', ctx => {
-
-})
-bot.on('supergroup_chat_created', ctx => {
-    console.log(ctx.message);
-})
-bot.on('channel_chat_created', ctx => {
-    console.log(ctx.message);
-})
-bot.on('message', ctx => {
-    console.log(ctx.message);
-})
-
+bot.context.restrictedWords = {
+    getRestrictWords: () => { return  }
+}
+const scores = bot.context.restrictedWords.getRestrictWords();
+console.log("socres -> " ,scores)
+scores.some(
+    score=>{
+        console.log(score)
+    bot.hears(score.word, ctx=>{
+        console.log("qwerqwer")
+    })
+    }
+)
 bot.on('text',  async ctx => {
     const request = {
         chat_id: ctx.chat.id
     }
-    try{
-        const words = (await restriction_words.findByChatId(request));
-        words.some(
-            word=> {
-                console.log(word);
-                if(ctx.message.text.includes(word.word_name)){
-                    bot.telegram.deleteMessage(request.chat_id, ctx.update.message.message_id)
-                        .then(result =>{
-                        })
-                        .catch(err =>{
-                        })
-                    return true;
-                }
-            }
-        )
-    }catch (err) {
 
-    }
+    // try{
+    //     const words = (await restriction_words.findByChatId(request));
+    //     words.some(
+    //         word=> {
+    //             console.log(word);
+    //             if(ctx.message.text.includes(word.word_name)){
+    //                 bot.telegram.deleteMessage(request.chat_id, ctx.update.message.message_id)
+    //                     .then(result =>{
+    //                     })
+    //                     .catch(err =>{
+    //                     })
+    //                 return true;
+    //             }
+    //         }
+    //     )
+    // }catch (err) {
+    //
+    // }
 })
 bot.launch();
 module.exports = app;

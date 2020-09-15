@@ -1,6 +1,6 @@
 'use strict'
 const express = require('express');
-const chat_blacklist = require('../controllers/chat_blacklist');
+const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const user_chat_whitelist = require('../controllers/user_chat_whitelist');
 const router = express.Router();
 

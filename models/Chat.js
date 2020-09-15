@@ -10,6 +10,13 @@ module.exports = (sequelize, Sequelize) => {
                 values: [ 'private','group','supergroup','channel' ]
             })
         },
+        restrict_type:{
+            type: Sequelize.STRING(20)
+        },
+        restrict_limit:{
+            type: Sequelize.INTEGER(10),
+            defaultValue: 0
+        },
         group_name:{
             type: Sequelize.STRING(255)
         },
@@ -47,9 +54,18 @@ module.exports = (sequelize, Sequelize) => {
         anti_command:{
             type: Sequelize.BOOLEAN,
             defaultValue: false
+        },
+        createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+        },
+        updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
         }
     },{
-        timestamps: true,
         freezeTableName: true
     });
 
