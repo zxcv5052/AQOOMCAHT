@@ -2,7 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const Chat_greeting = sequelize.define('Chat_greeting', {
         greeting_seq:{
             type: Sequelize.INTEGER(50),
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         greeting_text:{
             type: Sequelize.TEXT

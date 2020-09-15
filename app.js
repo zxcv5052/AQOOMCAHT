@@ -40,24 +40,27 @@ app.use(function(req, res, next) {
 const { Telegraf } = require('telegraf')
 const bot = new Telegraf(require('./config/botkey.json').test_botKey)
 
-bot.context.restrictedWords = {
-    getRestrictWords: () => { return  }
-}
-const scores = bot.context.restrictedWords.getRestrictWords();
-console.log("socres -> " ,scores)
-scores.some(
-    score=>{
-        console.log(score)
-    bot.hears(score.word, ctx=>{
-        console.log("qwerqwer")
-    })
-    }
-)
+/**
+ * bot.on('text')보완할 수 있는 방법.
+ */
+// bot.context.restrictedWords = {
+//     getRestrictWords: () => { return [{word:"kyeong"}, {word:"kyeong2"}] }
+// }
+// const scores = bot.context.restrictedWords.getRestrictWords();
+// console.log("socres -> " ,scores)
+// scores.some(
+//     score=>{
+//         console.log(score)
+//     bot.hears(score.word, ctx=>{
+//         console.log("qwerqwer")
+//     })
+//     }
+// )
+
 bot.on('text',  async ctx => {
     const request = {
         chat_id: ctx.chat.id
     }
-
     // try{
     //     const words = (await restriction_words.findByChatId(request));
     //     words.some(

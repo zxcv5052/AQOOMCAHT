@@ -2,7 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const Chat_timezone = sequelize.define('Chat_timezone', {
         timezone_seq:{
             type: Sequelize.INTEGER,
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         timezone:{
             type: Sequelize.STRING(255)

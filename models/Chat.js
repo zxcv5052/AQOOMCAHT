@@ -11,9 +11,16 @@ module.exports = (sequelize, Sequelize) => {
             })
         },
         restrict_type:{
-            type: Sequelize.STRING(20)
+            type: Sequelize.ENUM({
+                values: [ 'ban','time' ]
+            }),
+            defaultValue: null
         },
         restrict_limit:{
+            type: Sequelize.INTEGER(10),
+            defaultValue: 0
+        },
+        restrict_time:{
             type: Sequelize.INTEGER(10),
             defaultValue: 0
         },

@@ -2,7 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const Chat_FAQ = sequelize.define('Chat_FAQ', {
         faq_seq:{
             type: Sequelize.INTEGER(50),
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         content:{
             type: Sequelize.TEXT

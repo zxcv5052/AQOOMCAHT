@@ -80,7 +80,10 @@ db.Chat_Timezone.belongsTo(db.Chat, {
 /**
  * SET USER_CHAT Relation
  */
-db.User_Chat_Personal.belongsTo(db.User);
+db.User_Chat_Personal.belongsTo(db.User,{
+    foreignKey: "user_id",
+    as: "User"
+});
 db.User_Chat_Personal.belongsTo(db.Chat, {
     foreignKey: "chat_id",
     as: "Chat"

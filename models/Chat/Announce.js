@@ -2,7 +2,8 @@ module.exports = (sequelize, Sequelize) => {
     const Chat_announce = sequelize.define('Chat_announce', {
         announce_seq:{
             type: Sequelize.INTEGER(50),
-            primaryKey: true
+            primaryKey: true,
+            autoIncrement: true
         },
         announce_content:{
             type: Sequelize.TEXT

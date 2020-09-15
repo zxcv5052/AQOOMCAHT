@@ -22,6 +22,10 @@ module.exports = (sequelize, Sequelize) => {
         is_admin:{
             type: Sequelize.BOOLEAN
         },
+        warning_pt:{
+            type: Sequelize.INTEGER(10),
+            defaultValue: 0
+        },
         createdAt: {
             allowNull: false,
             type: Sequelize.DATE,

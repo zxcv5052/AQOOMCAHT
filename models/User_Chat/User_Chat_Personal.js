@@ -6,7 +6,12 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true
         },
         warning_pt:{
-            type: Sequelize.INTEGER(10)
+            type: Sequelize.INTEGER(10),
+            defaultValue: 0
+        },
+        restriction_date:{
+            type: Sequelize.DATE,
+            allowNull: true
         }
     },{
         timestamps: false,
