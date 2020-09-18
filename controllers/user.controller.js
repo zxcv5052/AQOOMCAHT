@@ -10,7 +10,9 @@ exports.updateOrCreate = request => {
             user_name: request.username,
             updatedAt: new Date()
         })
-            .then()
+            .then(()=>{
+                resolve();
+            })
             .catch( (err) => {
                 reject(err)
             });

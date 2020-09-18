@@ -1,12 +1,31 @@
 const db = require("../models");
 const Chat = db.Chat;
 
+exports.createOrUpdate =(request) => {
+    return new Promise(async (resolve, reject) => {
+        Chat.upsert({
+            chat_id: request.chat_id,
+            user_id: request.user_id,
+            type: request.type,
+            group_name: request.group_name,
+            is_active: true
+        })
+            .then(()=>{
+                resolve();
+            })
+            .catch( (err) => {
+                console.log(err)
+                reject("Cannot Create Room. Maybe Room was already exist!")
+            });
+    });
+};
+
 exports.create = (request) => {
     const chat = {
         chat_id: request.chat_id,
         user_id: request.user_id,
         type: request.type,
-        group_name: request.group_name,
+        group_name: request.group_name
     };
     return new Promise(async (resolve, reject) => {
         Chat.create(chat)
@@ -27,4 +46,27 @@ exports.create = (request) => {
  */
 exports.update = () => {
     Chat.update();
+}
+
+exports.findByChat = request => {
+    return new Promise(async (resolve, reject) => {
+        Chat.findByPk(request.chat_id)
+            .then((result)=>{
+                resolve(result);
+            })
+            .catch((err)=>{
+                reject(err);
+            })
+    });
+}
+exports.delete = request => {
+    return new Promise(async (resolve, reject) => {
+        Chat.update({is_active: false}, {where: {chat_id: request.chat_id}})
+            .then(()=>{
+                resolve();
+            })
+            .catch( (err) => {
+                reject(err)
+            });
+    });
 }

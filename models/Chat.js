@@ -71,6 +71,10 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             type: Sequelize.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        },
+        is_active:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
         }
     },{
         freezeTableName: true

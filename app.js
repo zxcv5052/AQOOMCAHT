@@ -37,8 +37,9 @@ app.use(function(req, res, next) {
  * For Telegram bot Hook
  */
 
-const { Telegraf } = require('telegraf')
-const bot = new Telegraf(require('./config/botkey.json').test_botKey)
+const { Telegraf } = require('telegraf');
+const bot = new Telegraf(require('./config/botkey.json').test_botKey);
+const bot_id = require('./config/botkey.json').test_botID;
 
 /**
  * bot.on('text')보완할 수 있는 방법.
@@ -105,11 +106,11 @@ function chatCreate(request, type){
                 .then( ()=>{
                     User_chat.findOrCreate(_request)
                         .then(()=>{
-                            return true;
                         })
                         .catch(()=>{
-                            return false;
                         })
+                })
+                .catch(()=>{
                 })
         })
         .catch( ()=>{
@@ -130,9 +131,12 @@ bot.on('group_chat_created',  ctx=>{
 });
 //</editor-fold>
 
+//<editor-fold desc=" Listener left & join member">
+
 /**
  * Listener join member ( after Need to bot )
  * Step
+ * 0. first check member is chat_bot
  * 1. if user already exists update or not create user
  * 2. if User_chat don't exists create user_chat
  * 3.
@@ -149,7 +153,13 @@ bot.on("new_chat_members", async ctx=>{
                 user_name: user.username,
                 is_bot: user.is_bot,
                 message_id: ctx.message.message_id,
-                message_type: 'join_chat'
+                message_type: 'join_chat',
+                type: 'group',
+                group_name : ctx.chat.title
+            }
+            console.log(user)
+            if(user.id === bot_id){
+                Chat.createOrUpdate(request)
             }
             User.updateOrCreate(request)
                 .then( () =>{
@@ -166,21 +176,34 @@ bot.on("new_chat_members", async ctx=>{
 /**
  * Listener left member ( after Need to bot )
  * Step
+ * 0. check this chat's creatorId===left member's id
  * 1. if user already exists update or not create user
  * 2. if User_chat don't exists create user_chat
  * 3.
  */
-bot.on('left_chat_member', ctx=>{
+bot.on('left_chat_member', async ctx=>{
     const user = ctx.message.left_chat_member;
-
     const request = {
         user_id : user.id,
         chat_id : ctx.chat.id,
         message_id: ctx.message.message_id,
         message_type: 'left_chat'
     }
+    let flag = false;
+    await Chat.findByChat(request)
+        .then((result)=>{
+            if(result.user_id === request.user_id) flag = true;
+        })
+        .catch((err)=>{
+        })
+    if(request.user_id === bot_id || flag){
+        Chat.delete(request)
+            .then();
+    }
     Message.create(request)
+        .then();
 })
+//</editor-fold>
 
 //<editor-fold desc="Listener user messaging">
 
@@ -203,14 +226,17 @@ bot.on('text',  async ctx => {
     //     console.log(String.fromCodePoint(emojiiin))
     //     ctx.message.text.replace(emoji,"sad");
     // }
-
     let request = {
         chat_id : ctx.chat.id,
         user_id : ctx.from.id,
         message_id : ctx.message.message_id,
         message_type : ctx.message.reply_to_message ? "reply" : "text",
         message :  ctx.message.text,
-        reply_to_message_id : ctx.message.reply_to_message !== undefined ? ctx.message.reply_to_message.message_id : null
+        reply_to_message_id : ctx.message.reply_to_message !== undefined ? ctx.message.reply_to_message.message_id : null,
+        entity : ctx.message.entities
+    }
+    if(request.entity !== undefined){
+        request.message_type = "entity_text"
     }
     try{
         const whiteUser = (await Whitelist.findByChatIdUserId(request));
@@ -234,6 +260,7 @@ bot.on('text',  async ctx => {
             .then(()=>{
             })
             .catch((err)=>{
+                console.log(err)
             })
     }catch (err) {
 

@@ -5,7 +5,8 @@ exports.findOrCreate = (request) => {
     const user_chat = {
         user_id: request.user_id,
         chat_id: request.chat_id,
-        is_bot: request.is_bot || false
+        is_bot: request.is_bot || false,
+        is_admin: request.is_admin
     };
 
     return new Promise((resolve, reject) => {
@@ -19,8 +20,7 @@ exports.findOrCreate = (request) => {
                 resolve()
             )
             .catch( (err)=> {
-
-                reject()
+                reject(err)
             });
     })
 };

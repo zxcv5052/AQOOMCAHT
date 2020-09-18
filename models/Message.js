@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: true
         },
+        entity:{
+            type: Sequelize.TEXT
+        },
         reply_to_message_id:{
             type: Sequelize.BIGINT(20),
             allowNull: true
