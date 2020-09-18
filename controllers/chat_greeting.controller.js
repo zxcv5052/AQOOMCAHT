@@ -20,14 +20,32 @@ exports.create = (request) => {
     })
 };
 
-exports.findByChatId = request => {
-    let chat_id = request.chat_id;
-
+/**
+ * @param request ( greeting_seq )
+ * @returns {Promise<chat_greeting>}
+ */
+exports.findByPK = request => {
     return new Promise(async (resolve, reject) => {
-        if(chat_id === undefined) return reject('not find to chat_id')
+        if(request.greeting_seq === undefined) return reject('not find ');
+        Chat_greeting.findByPk(request.greeting_seq)
+            .then((result)=>{
+                resolve(result);
+            })
+            .catch(()=>{
+                reject();
+            })
+    });
+}
+/**
+ * @param request ( chat_id )
+ * @returns {Promise<List<greeting_word>>}
+ */
+exports.findByChatId = request => {
+    return new Promise(async (resolve, reject) => {
+        if(request.chat_id === undefined) return reject('not find ')
         Chat_greeting.findAll({
             raw: true,
-            where: {chat_id: chat_id, is_active: true},
+            where: {chat_id: request.chat_id, is_active: true},
             attributes: ['word']
         })
             .then(data => {

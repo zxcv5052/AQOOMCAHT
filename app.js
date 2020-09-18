@@ -10,10 +10,10 @@ const roomsRouter = require('./routes/rooms')
 const usersRouter = require('./routes/users');
 
 const { sequelize } = require('./models');
+
 sequelize.sync();
 
 const app = express();
-
 
 /**
  * 파일 or 데이터베이스에 로그를 남기고 싶다면 wiston 모듈을 찾아 보도록 하자.
@@ -60,7 +60,6 @@ const bot_id = require('./config/botkey.json').test_botID;
 // )
 
 bot.on('channel_post', ctx=>{
-    console.log("asdfzxcv");
     console.log(ctx.update.channel_post.text);
 })
 
@@ -69,7 +68,6 @@ bot.use((ctx,next)=>{
 })
 
 bot.on('edited_channel_post', ctx=>{
-    console.log("qwerqwer")
     console.log(ctx.update.channel_post.text);
 })
 const emojiRegex = require('emoji-regex')
@@ -157,7 +155,6 @@ bot.on("new_chat_members", async ctx=>{
                 type: 'group',
                 group_name : ctx.chat.title
             }
-            console.log(user)
             if(user.id === bot_id){
                 Chat.createOrUpdate(request)
             }
@@ -208,7 +205,6 @@ bot.on('left_chat_member', async ctx=>{
 //<editor-fold desc="Listener user messaging">
 
 bot.on("sticker", async ctx=>{
-    console.log(ctx.message)
 })
 
 /**
@@ -260,7 +256,6 @@ bot.on('text',  async ctx => {
             .then(()=>{
             })
             .catch((err)=>{
-                console.log(err)
             })
     }catch (err) {
 

@@ -1,6 +1,8 @@
 'use strict'
+
 const express = require('express');
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
+const chat_greeting = require('../controllers/chat_greeting.controller');
 const user_chat_whitelist = require('../controllers/user_chat_whitelist');
 const router = express.Router();
 
@@ -64,7 +66,7 @@ router.delete('/restriction/words/:blacklist_seq', (req, res) =>{
  * Method : POST
  * origin : '/pushWhitelist'
  */
-router.post('/whitelist/user/', (req, res) => {
+router.post('/whitelist/user', (req, res) => {
     const request = {
         user_id : req.body.user_id,
         chat_id : req.body.chat_id
@@ -114,5 +116,19 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
             res.status(500).send(err)
         })
 });
+
+
+router.get('/greeting/:seq', (req, res) =>{
+    const request = {
+        seq : req.params.seq
+    };
+    chat_greeting.findByPK(request)
+        .then((result)=>{
+            res.status(200).send(result);
+        })
+        .catch(err=>{
+            res.status(500).send(err);
+        })
+})
 
 module.exports = router;

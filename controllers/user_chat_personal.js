@@ -24,3 +24,36 @@ exports.findOrCreate = (request) => {
             });
     })
 };
+
+/**
+ * @param request ( chat_id )
+ * @returns {Promise<List<User_Chat_Personal>>}
+ */
+exports.findByChat = request =>{
+    return new Promise((resolve, reject) => {
+        User_Chat_Personal.findAll({where: {chat_id: request.chat_id}})
+            .then(result=>{
+                resolve(result);
+            })
+            .catch(err=>{
+                reject(err);
+            })
+    })
+}
+
+/**
+ * @returns {Promise<db.User_Chat_Personal>}
+ */
+exports.findByIsAdmin = () =>{
+    return new Promise((resolve, reject) => {
+        User_Chat_Personal.findAll({where: {is_bot: true}})
+            .then(result=>{
+                resolve(result);
+            })
+            .catch(err=>{
+                reject(err);
+            })
+    })
+}
+
+

@@ -12,8 +12,8 @@ exports.create = (request) => {
             .then( ()=>
                resolve()
             )
-            .catch( ()=> {
-                reject("Cannot Create Url. Maybe Url was already exist Or Url was not valid")
+            .catch( (err)=> {
+                reject(err)
             });
     })
 };

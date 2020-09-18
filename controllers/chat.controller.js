@@ -14,8 +14,7 @@ exports.createOrUpdate =(request) => {
                 resolve();
             })
             .catch( (err) => {
-                console.log(err)
-                reject("Cannot Create Room. Maybe Room was already exist!")
+                reject(err);
             });
     });
 };
@@ -33,21 +32,37 @@ exports.create = (request) => {
                 resolve();
             })
             .catch( (err) => {
-                console.log(err)
-                reject("Cannot Create Room. Maybe Room was already exist!")
+                reject(err)
             });
     });
 };
 
 /**
- * 고려해야될 사항 : chat 의 updatedAt만 사용하려하는가? ( chat_id 에서 진행이 된다면 update를 진행해야함. )
- * title이 바뀔 때는 감지가 가능하다.
- * but, 그룹-> 채널 | 그룹 -> supergroup | channel -> group 감지가 가능하려나..?
+ * @param request ( user_id )
+ * @returns {Promise<db.Chat>}
  */
-exports.update = () => {
-    Chat.update();
+exports.findByUser = request =>{
+    return new Promise(async (resolve, reject) => {
+        Chat.findAll({
+            where: {
+                user_id : request.user_id,
+                is_active: true
+            }
+        })
+            .then((result)=>{
+                resolve(result);
+            })
+            .catch((err)=>{
+                reject(err);
+            })
+    });
 }
 
+/**
+ *
+ * @param request ( chat_id )
+ * @returns {Promise<db.Chat>}
+ */
 exports.findByChat = request => {
     return new Promise(async (resolve, reject) => {
         Chat.findByPk(request.chat_id)
@@ -59,6 +74,16 @@ exports.findByChat = request => {
             })
     });
 }
+
+/**
+ * 고려해야될 사항 : chat 의 updatedAt만 사용하려하는가? ( chat_id 에서 진행이 된다면 update를 진행해야함. )
+ * title이 바뀔 때는 감지가 가능하다.
+ * but, 그룹-> 채널 | 그룹 -> supergroup | channel -> group 감지가 가능하려나..?
+ */
+exports.update = () => {
+    Chat.update();
+}
+
 exports.delete = request => {
     return new Promise(async (resolve, reject) => {
         Chat.update({is_active: false}, {where: {chat_id: request.chat_id}})

@@ -1,6 +1,10 @@
 const db = require("../models");
 const User = db.User;
 
+/**
+ * @param request ( user_id, first_name, last_name, user_name ) if already exists add ( updateAt )
+ * @returns {Promise<none>}
+ */
 exports.updateOrCreate = request => {
     return new Promise(async (resolve, reject) => {
         User.upsert({
@@ -18,13 +22,13 @@ exports.updateOrCreate = request => {
             });
     });
 };
-exports.findByChat = request =>{
-
-}
+/**
+ * @param request ( user_id )
+ * @returns {Promise<List<db.User>>}
+ */
 exports.findByUser = request =>{
-    const user_id = request.user_id;
     return new Promise((resolve, reject) => {
-        User.findAll({where: {user_id: user_id}})
+        User.findAll({where: {user_id: request.user_id}})
             .then(result=>{
                 resolve(result);
             })
