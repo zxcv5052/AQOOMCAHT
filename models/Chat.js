@@ -4,11 +4,17 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.BIGINT,
             primaryKey: true
         },
+        user_id:{
+            type: Sequelize.BIGINT(20)
+        },
         type:{
             allowNull: false,
             type: Sequelize.ENUM({
                 values: [ 'private','group','supergroup','channel' ]
             })
+        },
+        group_name:{
+            type: Sequelize.STRING(255)
         },
         restrict_type:{
             type: Sequelize.ENUM({
@@ -23,12 +29,6 @@ module.exports = (sequelize, Sequelize) => {
         restrict_time:{
             type: Sequelize.INTEGER(10),
             defaultValue: 0
-        },
-        group_name:{
-            type: Sequelize.STRING(255)
-        },
-        creator_name:{
-            type: Sequelize.STRING(50)
         },
         anti_image:{
             type: Sequelize.BOOLEAN,
@@ -70,7 +70,7 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: {
             allowNull: false,
             type: Sequelize.DATE,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         }
     },{
         freezeTableName: true

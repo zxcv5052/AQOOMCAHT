@@ -13,15 +13,6 @@ module.exports = (sequelize, Sequelize) => {
         user_name:{
             type: Sequelize.STRING(50)
         },
-        is_bot:{
-            type: Sequelize.BOOLEAN
-        },
-        is_new:{
-            type: Sequelize.BOOLEAN
-        },
-        is_admin:{
-            type: Sequelize.BOOLEAN
-        },
         warning_pt:{
             type: Sequelize.INTEGER(10),
             defaultValue: 0
@@ -34,7 +25,7 @@ module.exports = (sequelize, Sequelize) => {
         updatedAt: {
             allowNull: false,
             type: Sequelize.DATE,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         }
     },{
         freezeTableName: true

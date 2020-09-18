@@ -17,7 +17,24 @@ exports.create = (request) => {
             });
     })
 };
-
+/**
+ * @param request ( chat_id & user_id )
+ */
+exports.findByChatIdUserId = request =>{
+    return new Promise((resolve, reject) => {
+        User_Chat_Whitelist.findOne(
+            {
+                where :
+                    {chat_id : request.chat_id, user_id : request.user_id}
+            })
+            .then(data => {
+                resolve(data);
+            })
+            .catch(err => {
+                reject(undefined);
+            });
+    });
+}
 exports.findByChatId = (request) => {
     const chat_id = request.chat_id;
 

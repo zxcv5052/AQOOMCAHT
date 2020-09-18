@@ -12,6 +12,14 @@ module.exports = (sequelize, Sequelize) => {
         restriction_date:{
             type: Sequelize.DATE,
             allowNull: true
+        },
+        is_admin:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
+        },
+        is_bot:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
         }
     },{
         timestamps: false,

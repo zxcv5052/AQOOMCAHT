@@ -1,19 +1,15 @@
 const db = require("../models");
-const Words = db.Chat_blacklist;
-
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
+const Chat_greeting = db.Chat_greeting;
 
 // Create and Save a new Word
-exports.create = request => {
-    const words = {
-        word: request.word.trim(),
+exports.create = (request) => {
+    const greeting = {
         chat_id: request.chat_id
     };
 
     return new Promise(async (resolve, reject) => {
-        if(words.word === undefined || words.word === "" || words.chat_id === undefined) return reject('plz, set word');
-        Words.create(words)
+        if(greeting.word === undefined || greeting.word === "" || greeting.chat_id === undefined) return reject('plz, set word');
+        Chat_greeting.create(greeting)
             .then(data => {
                 if(!data) reject();
                 else resolve();
@@ -29,7 +25,7 @@ exports.findByChatId = request => {
 
     return new Promise(async (resolve, reject) => {
         if(chat_id === undefined) return reject('not find to chat_id')
-        Words.findAll({
+        Chat_greeting.findAll({
             raw: true,
             where: {chat_id: chat_id, is_active: true},
             attributes: ['word']
@@ -44,13 +40,13 @@ exports.findByChatId = request => {
 }
 
 // Delete a Tutorial with the specified id in the request
-exports.delete = request => {
-    const blacklist_seq = request.blacklist_seq;
+exports.delete = (request) => {
+    const greetingSeq = request.greeting_seq;
 
     return new Promise(async (resolve, reject) => {
-        if(blacklist_seq === undefined) return reject("already delete");
+        if(greetingSeq === undefined) return reject("already delete");
 
-        Words.update({is_active: false},{where: {blacklist_seq: blacklist_seq}})
+        Chat_greeting.update({is_active: false},{where: {greeting_seq: greetingSeq}})
             .then(num => {
                 if (num) {
                     resolve("Words was deleted successfully!");
