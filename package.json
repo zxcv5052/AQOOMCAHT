@@ -18,6 +18,8 @@
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.5",
     "sequelize-cli": "^6.2.0",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4",
     "telegraf": "^3.38.0",
     "telegraf-getchatmembers": "^1.0.0"
   }

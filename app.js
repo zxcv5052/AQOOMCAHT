@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
+const swaggerDoc = require('./public/swaggerDoc')
 const optionsRouter = require('./routes/options');
 const accumulationsRouter = require('./routes/accumaltions')
 const roomsRouter = require('./routes/rooms')
@@ -14,6 +14,8 @@ const { sequelize } = require('./models');
 sequelize.sync();
 
 const app = express();
+
+swaggerDoc(app);
 
 /**
  * 파일 or 데이터베이스에 로그를 남기고 싶다면 wiston 모듈을 찾아 보도록 하자.

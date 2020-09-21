@@ -1,17 +1,44 @@
 'use strict'
-
+/**
+ * @swagger
+ * tags:
+ *   name: "BlackListWords"
+ *   description: 제한된 단어에 대한 처리
+ */
 const express = require('express');
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const chat_greeting = require('../controllers/chat_greeting.controller');
 const user_chat_whitelist = require('../controllers/user_chat_whitelist');
 const router = express.Router();
 
+//region Swagger /options/blacklist/words/{chat_id}
 /**
- * path : 'address/options/restriction/words/<chat_id>
- * Method : GET
- * origin : '/getWordData'
+ * @swagger
+ * /options/blacklist/words/{chat_id}:
+ *   get:
+ *     tags:
+ *     - "BlackListWords"
+ *     parameters:
+ *       - name: chat_id
+ *         in : path
+ *         schema:
+ *           type: integer
+ *     description: Get Black Words from Chatting ID
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *             properties:
+ *               word:
+ *                  type: string
  */
-router.get('/restriction/words/:chat_id', (req,res) => {
+//endregion
+
+router.get('/blacklist/words/:chat_id', (req,res) => {
     const request = {
         chat_id : req.params.chat_id
     };
@@ -29,7 +56,7 @@ router.get('/restriction/words/:chat_id', (req,res) => {
  * Method : POST
  * origin : '/pushWordData'
  */
-router.post('/restriction/words/', (req,res) => {
+router.post('/blacklist/words/', (req,res) => {
     const request = {
         chat_id : req.body.chat_id,
         word : req.body.word
@@ -48,7 +75,7 @@ router.post('/restriction/words/', (req,res) => {
  * Method : DELETE
  * origin : '/delWordData'
  */
-router.delete('/restriction/words/:blacklist_seq', (req, res) =>{
+router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
     const request = {
         blacklist_seq :req.params.blacklist_seq
     }

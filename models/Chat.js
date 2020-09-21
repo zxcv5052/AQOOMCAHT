@@ -26,9 +26,9 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.INTEGER(10),
             defaultValue: 0
         },
-        restrict_time:{
-            type: Sequelize.INTEGER(10),
-            defaultValue: 0
+        restrict_date:{
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
         },
         anti_image:{
             type: Sequelize.BOOLEAN,
