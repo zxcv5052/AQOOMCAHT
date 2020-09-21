@@ -35,6 +35,14 @@ const router = express.Router();
  *             properties:
  *               word:
  *                  type: string
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
  */
 //endregion
 
@@ -44,55 +52,108 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
     };
     chat_blacklist.findByChatId(request)
         .then(result=>{
-            res.send(result);
+            if(result === undefined) res.status(204).send(result);
+            else res.status(200).send(result);
         })
         .catch(()=>{
-            res.send("false");
+            res.status(500).send("false");
         });
 });
 
+//region Swagger POST /options/blacklist/words/
 /**
- * path : 'address/options/restriction/words/
- * Method : POST
- * origin : '/pushWordData'
+ * @swagger
+ * /options/blacklist/words/:
+ *   post:
+ *     tags:
+ *     - "BlackListWords"
+ *     parameters:
+ *       - in: body
+ *         schema:
+ *          type: object
+ *          required:
+ *              - chat_id
+ *              - word
+ *          properties:
+ *              chat_id:
+ *                type: integer
+ *              word:
+ *                type: string
+ *     description: Create Black List Word
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
  */
+//endregion
+
 router.post('/blacklist/words/', (req,res) => {
     const request = {
         chat_id : req.body.chat_id,
         word : req.body.word
     };
     chat_blacklist.create(request)
-        .then(() =>{
+        .then((result) =>{
             res.send("true")
         })
         .catch(err => {
             res.status(500).send(err)
         })
 });
-
+//region Swagger DELETE /options/blacklist/words/:blacklist_seq
 /**
- * path : 'address/options/restriction/words/<pk>'
- * Method : DELETE
- * origin : '/delWordData'
+ * @swagger
+ * /options/blacklist/words/{blacklist_seq}:
+ *  delete:
+ *     tags:
+ *     - "BlackListWords"
+ *     parameters:
+ *       - name: blacklist_seq
+ *         in : path
+ *         type: integer
+ *     description: Delete Black List Word
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
  */
+//endregion
+
 router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
     const request = {
         blacklist_seq :req.params.blacklist_seq
     }
     chat_blacklist.delete(request)
-        .then(() =>{
-            res.send("true")
+        .then((result) =>{
+            if(result !== undefined){
+                res.status(200).send("ok");
+            }else{
+                res.status(203).send("ok");
+            }
         })
         .catch(err =>{
             res.status(500).send(err);
         })
 });
 
-/**
- * path: 'address/options/whitelist/user
- * Method : POST
- * origin : '/pushWhitelist'
- */
 router.post('/whitelist/user', (req, res) => {
     const request = {
         user_id : req.body.user_id,
@@ -107,12 +168,6 @@ router.post('/whitelist/user', (req, res) => {
         })
 });
 
-/**
- * path: 'address/options/whitelist/user/<chat_id>'
- * Method : GET
- * origin : '/getWhitelist'
- */
-
 router.get('/whitelist/user/:chat_id', (req, res) => {
     const request = {
         chat_id : req.params.chat_id
@@ -126,11 +181,6 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
         })
 });
 
-/**
- * path: 'address/options/whitelist/user/<pk>'
- * Method : Delete
- * origin : '/delWhitelist'
- */
 router.delete('/whitelist/user/:seq', (req, res) =>{
     const request = {
         seq : req.params.seq

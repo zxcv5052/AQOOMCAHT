@@ -21,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.BOOLEAN
         },
         button:{
-            type: Sequelize.STRING(255)
+            type: Sequelize.TEXT
         }
     },{
         timestamps: true,

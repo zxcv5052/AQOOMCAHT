@@ -15,6 +15,7 @@ exports.create = request => {
         if(words.word === undefined || words.word === "" || words.chat_id === undefined) return reject('plz, set word');
         Words.create(words)
             .then(data => {
+                console.log(data);
                 if(!data) reject();
                 else resolve();
             })
@@ -35,7 +36,8 @@ exports.findByChatId = request => {
             attributes: ['word']
         })
             .then(data => {
-                resolve(data);
+                if(data.length === 0) resolve();
+                else resolve(data);
             })
             .catch(err=> {
                 reject('some db executing is error');
@@ -53,9 +55,9 @@ exports.delete = request => {
         Words.update({is_active: false},{where: {blacklist_seq: blacklist_seq}})
             .then(num => {
                 if (num) {
-                    resolve("Words was deleted successfully!");
+                    resolve(num);
                 } else {
-                    reject(`Cannot delete Words. Maybe Words was not found!`);
+                    resolve();
                 }
             })
             .catch(err => {
