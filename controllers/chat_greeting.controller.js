@@ -3,19 +3,15 @@ const Chat_greeting = db.Chat_greeting;
 
 // Create and Save a new Word
 exports.create = (request) => {
-    const greeting = {
-        chat_id: request.chat_id
-    };
-
     return new Promise(async (resolve, reject) => {
-        if(greeting.word === undefined || greeting.word === "" || greeting.chat_id === undefined) return reject('plz, set word');
-        Chat_greeting.create(greeting)
+        if(request.greeting_image === undefined && request.greeting_text === undefined) resolve(500);
+        Chat_greeting.create(request)
             .then(data => {
-                if(!data) reject();
+                if(!data) resolve();
                 else resolve();
             })
-            .catch(err=> {
-                reject();
+            .catch(()=> {
+                reject(500);
             });
     })
 };
@@ -26,13 +22,13 @@ exports.create = (request) => {
  */
 exports.findByPK = request => {
     return new Promise(async (resolve, reject) => {
-        if(request.greeting_seq === undefined) return reject('not find ');
+        if(request.greeting_seq === undefined) return reject(500);
         Chat_greeting.findByPk(request.greeting_seq)
             .then((result)=>{
                 resolve(result);
             })
             .catch(()=>{
-                reject();
+                reject(500);
             })
     });
 }
@@ -42,17 +38,16 @@ exports.findByPK = request => {
  */
 exports.findByChatId = request => {
     return new Promise(async (resolve, reject) => {
-        if(request.chat_id === undefined) return reject('not find ')
+        if(request.chat_id === undefined) return reject(500)
         Chat_greeting.findAll({
-            raw: true,
             where: {chat_id: request.chat_id, is_active: true},
-            attributes: ['word']
         })
             .then(data => {
-                resolve(data);
+                if(data.length===0) resolve();
+                else resolve(data);
             })
-            .catch(err=> {
-                reject('some db executing is error');
+            .catch(()=> {
+                reject(500);
             });
     })
 }
@@ -62,18 +57,18 @@ exports.delete = (request) => {
     const greetingSeq = request.greeting_seq;
 
     return new Promise(async (resolve, reject) => {
-        if(greetingSeq === undefined) return reject("already delete");
+        if(greetingSeq === undefined) return reject(500);
 
         Chat_greeting.update({is_active: false},{where: {greeting_seq: greetingSeq}})
             .then(num => {
-                if (num) {
-                    resolve("Words was deleted successfully!");
+                if (num === 1) {
+                    resolve(num);
                 } else {
-                    reject(`Cannot delete Words. Maybe Words was not found!`);
+                    resolve();
                 }
             })
-            .catch(err => {
-                reject("Could not Delete");
+            .catch(() => {
+                reject(500);
             });
     });
 };

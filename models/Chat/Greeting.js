@@ -11,14 +11,12 @@ module.exports = (sequelize, Sequelize) => {
         greeting_image: {
             type: Sequelize.STRING(255),
         },
-        response_type:{
-            type: Sequelize.BOOLEAN
-        },
-        is_active:{
-            type: Sequelize.BOOLEAN
-        },
         button:{
             type: Sequelize.TEXT
+        },
+        is_active:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
         }
     },{
         timestamps: true,

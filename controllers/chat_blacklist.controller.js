@@ -12,15 +12,13 @@ exports.create = request => {
     };
 
     return new Promise(async (resolve, reject) => {
-        if(words.word === undefined || words.word === "" || words.chat_id === undefined) return reject('plz, set word');
+        if(words.word === undefined || words.word === "" || words.chat_id === undefined) return reject(400);
         Words.create(words)
             .then(data => {
-                console.log(data);
-                if(!data) reject();
-                else resolve();
+                resolve();
             })
-            .catch(err=> {
-                reject();
+            .catch(()=> {
+                reject(500);
             });
     })
 };
@@ -29,7 +27,7 @@ exports.findByChatId = request => {
     let chat_id = request.chat_id;
 
     return new Promise(async (resolve, reject) => {
-        if(chat_id === undefined) return reject('not find to chat_id')
+        if(chat_id === undefined) return reject(400)
         Words.findAll({
             raw: true,
             where: {chat_id: chat_id, is_active: true},
@@ -39,8 +37,8 @@ exports.findByChatId = request => {
                 if(data.length === 0) resolve();
                 else resolve(data);
             })
-            .catch(err=> {
-                reject('some db executing is error');
+            .catch(()=> {
+                reject(500);
             });
     })
 }
@@ -50,18 +48,18 @@ exports.delete = request => {
     const blacklist_seq = request.blacklist_seq;
 
     return new Promise(async (resolve, reject) => {
-        if(blacklist_seq === undefined) return reject("already delete");
+        if(blacklist_seq === undefined) return reject();
 
         Words.update({is_active: false},{where: {blacklist_seq: blacklist_seq}})
             .then(num => {
-                if (num) {
+                if (num===0) {
                     resolve(num);
                 } else {
                     resolve();
                 }
             })
             .catch(err => {
-                reject("Could not Delete");
+                reject();
             });
     });
 };

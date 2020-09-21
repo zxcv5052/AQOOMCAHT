@@ -30,7 +30,7 @@ const router = express.Router();
  *               word:
  *                  type: string
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -46,8 +46,7 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
     };
     chat_blacklist.findByChatId(request)
         .then(result=>{
-            if(result === undefined) res.status(204).send("empty");
-            else res.status(200).send(result);
+            res.status(200).send(result);
         })
         .catch(()=>{
             res.status(500).send("false");
@@ -63,16 +62,16 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
  *     - "BlackListWords"
  *     parameters:
  *       - in: body
+ *         name: word
  *         schema:
- *          type: object
- *          required:
- *              - chat_id
- *              - word
- *          properties:
- *              chat_id:
- *                type: integer
- *              word:
- *                type: string
+ *              type: object
+ *              properties:
+ *                  chat_id:
+ *                      type: integer
+ *                      required: true
+ *                  word:
+ *                      type: string
+ *                      required: true
  *     description: Create Black List Word
  *     produces:
  *      - application/json
@@ -80,7 +79,7 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
  *       200:
  *         description: OK
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -121,7 +120,7 @@ router.post('/blacklist/words/', (req,res) => {
  *       200:
  *         description: OK
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -171,7 +170,7 @@ router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
  *           items:
  *              $ref: '#/definitions/user_chat_whitelist'
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -187,8 +186,7 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
     };
     user_chat_whitelist.findByChatId(request)
         .then(result=>{
-            if(result === undefined) res.status(204).send("empty")
-            else res.status(200).send(result)
+            res.status(200).send(result)
         })
         .catch(err =>{
             res.status(500).send(err);
@@ -203,17 +201,17 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
  *     tags:
  *     - "WhiteListUsers"
  *     parameters:
- *       - in: body
- *         schema:
+ *      - in: body
+ *        name: user&chat
+ *        schema:
  *          type: object
- *          required:
- *              - chat_id
- *              - user_id
  *          properties:
  *              user_id:
- *                type: integer
+ *                  type: integer
+ *                  required: true
  *              chat_id:
- *                type: integer
+ *                  type: integer
+ *                  required: true
  *     description: Create White List User
  *     produces:
  *      - application/json
@@ -221,7 +219,7 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
  *       200:
  *         description: OK
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -263,7 +261,7 @@ router.post('/whitelist/user', (req, res) => {
  *       200:
  *         description: OK
  *       204:
- *         $ref: '#/components/res/EmptyResult'
+ *         $ref: '#/components/res/NoContent'
  *       403:
  *         $ref: '#/components/res/Forbidden'
  *       404:
@@ -286,17 +284,149 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
         })
 });
 
+//region Swagger /options/greeting/{chat_id}
+/**
+ * @swagger
+ * /options/greeting/{chat_id}:
+ *   get:
+ *     tags:
+ *     - "Greetings"
+ *     parameters:
+ *       - name: chat_id
+ *         in : path
+ *         schema:
+ *           type: integer
+ *     description: Get Greeting Info from Chatting ID
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *              $ref: '#/definitions/chat_greeting'
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
 
-router.get('/greeting/:seq', (req, res) =>{
+router.get('/greeting/:chat_id', (req, res) =>{
     const request = {
-        seq : req.params.seq
+        seq : req.params.chat_id
     };
-    chat_greeting.findByPK(request)
+    chat_greeting.findByChatId(request)
         .then((result)=>{
-            res.status(200).send(result);
+            if(result === undefined) res.status(204).seq("false");
+            else res.status(200).send(result);
         })
         .catch(err=>{
             res.status(500).send(err);
+        })
+})
+//region Swagger POST /options/greeting/
+/**
+ * @swagger
+ * /options/greeting/:
+ *   post:
+ *     tags:
+ *     - "Greetings"
+ *     parameters:
+ *      - in: body
+ *        name: greet
+ *        schema:
+ *          type: object
+ *          properties:
+ *              greeting_text:
+ *                  type: string
+ *                  description: it's type TEXT
+ *              greeting_image:
+ *                  type: string
+ *              button:
+ *                  type: string
+ *                  description: it's type TEXT
+ *              chat_id:
+ *                  type: integer
+ *                  required: true
+ *     description: Create Greeting Message
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+
+router.post('/greeting/', (req,res)=>{
+    const request = {
+        greeting_text: req.body.greeting_text,
+        greeting_image: req.body.greeting_image,
+        response_type: req.body.response_type,
+        button: req.body.button,
+        chat_id: req.body.chat_id
+    }
+    chat_greeting.create(request)
+        .then(()=>{
+            res.status(200).send("ok")
+        })
+        .catch(err=>{
+            res.status(500).send(err);
+        })
+})
+
+//region Swagger DELETE /options/greeting/:greeting_seq
+/**
+ * @swagger
+ * /options/greeting/{greeting_seq}:
+ *  delete:
+ *     tags:
+ *     - "Greetings"
+ *     parameters:
+ *       - name: greeting_seq
+ *         in : path
+ *         type: integer
+ *     description: Delete Greeting Message
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+
+router.delete('/greeting/:greeting_seq', (req,res)=>{
+    const request = {
+        greeting_seq : req.body.greeting_seq
+    };
+    chat_greeting.delete(request)
+        .then(result=>{
+            if(result === undefined) res.status(204).send();
+            else res.status(200).send("ok");
+        })
+        .catch(()=>{
+            res.status(500).send("false")
         })
 })
 
