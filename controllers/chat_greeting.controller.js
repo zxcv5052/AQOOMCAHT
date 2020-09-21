@@ -54,12 +54,10 @@ exports.findByChatId = request => {
 
 // Delete a Tutorial with the specified id in the request
 exports.delete = (request) => {
-    const greetingSeq = request.greeting_seq;
-
     return new Promise(async (resolve, reject) => {
-        if(greetingSeq === undefined) return reject(500);
+        if(request.greeting_seq === undefined) return reject(500);
 
-        Chat_greeting.update({is_active: false},{where: {greeting_seq: greetingSeq}})
+        Chat_greeting.update({is_active: false},{where: {greeting_seq: request.greeting_seq}})
             .then(num => {
                 if (num === 1) {
                     resolve(num);
@@ -72,3 +70,29 @@ exports.delete = (request) => {
             });
     });
 };
+
+exports.update = request =>{
+    return new Promise(async (resolve, reject) => {
+        if(request.greeting_seq === undefined) return reject(500);
+
+        Chat_greeting.update(
+            {
+                greeting_text: request.greeting_text,
+                greeting_image: request.greeting_image,
+                button: request.button,
+                is_active: request.is_active,
+                updatedAt: new Date()
+            },
+            {where: {greeting_seq: request.greeting_seq}})
+            .then(num => {
+                if (num === 1) {
+                    resolve(num);
+                } else {
+                    resolve();
+                }
+            })
+            .catch(() => {
+                reject(500);
+            });
+    });
+}

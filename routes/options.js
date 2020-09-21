@@ -375,7 +375,6 @@ router.post('/greeting/', (req,res)=>{
     const request = {
         greeting_text: req.body.greeting_text,
         greeting_image: req.body.greeting_image,
-        response_type: req.body.response_type,
         button: req.body.button,
         chat_id: req.body.chat_id
     }
@@ -427,6 +426,67 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
         })
         .catch(()=>{
             res.status(500).send("false")
+        })
+})
+//region Swagger PUT /options/greeting/
+/**
+ * @swagger
+ * /options/greeting/:
+ *   put:
+ *     tags:
+ *     - "Greetings"
+ *     parameters:
+ *       - in: body
+ *         name: greet
+ *         schema:
+ *              type: object
+ *              properties:
+ *                  greeting_seq:
+ *                      type: integer
+ *                      required: true
+ *                  greeting_text:
+ *                      type: string
+ *                  greeting_image:
+ *                      type: string
+ *                  button:
+ *                      type: string
+ *                  is_active:
+ *                      type: boolean
+ *
+ *     description: Update Greeting Message
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.put('/greeting/', (req,res)=>{
+    const request = {
+        greeting_seq: req.body.greeting_seq,
+        greeting_text: req.body.greeting_text,
+        greeting_image: req.body.greeting_image,
+        button: req.body.button,
+        is_active: req.body.is_active
+    }
+    /**
+     * Check Validation 생각 안해봄
+     */
+    chat_greeting.update(request)
+        .then(result=>{
+            if(result === undefined) res.status(204).send();
+            else res.status(200).send("ok")
+        })
+        .catch(()=>{
+            res.status(500).send("false");
         })
 })
 
