@@ -39,8 +39,9 @@ exports.findByChatId = (request) => {
     const chat_id = request.chat_id;
 
     return new Promise((resolve, reject) => {
-        User_Chat_Whitelist.findOne({where : {chat_id : chat_id}})
+        User_Chat_Whitelist.findAll({where : {chat_id : chat_id}})
             .then(data => {
+                if(data.length === 0 ) resolve();
                 resolve(data);
             })
             .catch(err => {

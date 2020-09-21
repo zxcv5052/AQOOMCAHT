@@ -1,10 +1,4 @@
 'use strict'
-/**
- * @swagger
- * tags:
- *   name: "BlackListWords"
- *   description: 제한된 단어에 대한 처리
- */
 const express = require('express');
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const chat_greeting = require('../controllers/chat_greeting.controller');
@@ -52,7 +46,7 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
     };
     chat_blacklist.findByChatId(request)
         .then(result=>{
-            if(result === undefined) res.status(204).send(result);
+            if(result === undefined) res.status(204).send("empty");
             else res.status(200).send(result);
         })
         .catch(()=>{
@@ -102,8 +96,8 @@ router.post('/blacklist/words/', (req,res) => {
         word : req.body.word
     };
     chat_blacklist.create(request)
-        .then((result) =>{
-            res.send("true")
+        .then(result =>{
+            res.status(200).send("true")
         })
         .catch(err => {
             res.status(500).send(err)
@@ -142,17 +136,100 @@ router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
         blacklist_seq :req.params.blacklist_seq
     }
     chat_blacklist.delete(request)
-        .then((result) =>{
+        .then(result =>{
             if(result !== undefined){
                 res.status(200).send("ok");
             }else{
-                res.status(203).send("ok");
+                res.status(204).send("empty");
             }
         })
         .catch(err =>{
             res.status(500).send(err);
         })
 });
+
+//region Swagger /options/whitelist/user/{chat_id}
+/**
+ * @swagger
+ * /options/whitelist/user/{chat_id}:
+ *   get:
+ *     tags:
+ *     - "WhiteListUsers"
+ *     parameters:
+ *       - name: chat_id
+ *         in : path
+ *         schema:
+ *           type: integer
+ *     description: Get White User from Chatting ID
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *              $ref: '#/definitions/user_chat_whitelist'
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+
+router.get('/whitelist/user/:chat_id', (req, res) => {
+    const request = {
+        chat_id : req.params.chat_id
+    };
+    user_chat_whitelist.findByChatId(request)
+        .then(result=>{
+            if(result === undefined) res.status(204).send("empty")
+            else res.status(200).send(result)
+        })
+        .catch(err =>{
+            res.status(500).send(err);
+        })
+});
+
+//region Swagger POST /options/whitelist/user/
+/**
+ * @swagger
+ * /options/whitelist/user/:
+ *   post:
+ *     tags:
+ *     - "WhiteListUsers"
+ *     parameters:
+ *       - in: body
+ *         schema:
+ *          type: object
+ *          required:
+ *              - chat_id
+ *              - user_id
+ *          properties:
+ *              user_id:
+ *                type: integer
+ *              chat_id:
+ *                type: integer
+ *     description: Create White List User
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
 
 router.post('/whitelist/user', (req, res) => {
     const request = {
@@ -164,22 +241,37 @@ router.post('/whitelist/user', (req, res) => {
             res.status(200).send("ok");
         })
         .catch(err =>{
-            res.status(500).send(err);
+            res.status(500).send("false");
         })
 });
 
-router.get('/whitelist/user/:chat_id', (req, res) => {
-    const request = {
-        chat_id : req.params.chat_id
-    };
-    user_chat_whitelist.findByChatId(request)
-        .then(()=>{
-            res.status(200).send("ok")
-        })
-        .catch(err =>{
-            res.status(500).send(err);
-        })
-});
+//region Swagger DELETE /options/blacklist/words/:blacklist_seq
+/**
+ * @swagger
+ * /options/whitelist/user/{whitelist_seq}:
+ *  delete:
+ *     tags:
+ *     - "WhiteListUsers"
+ *     parameters:
+ *       - name: whitelist_seq
+ *         in : path
+ *         type: integer
+ *     description: Delete White List User
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/EmptyResult'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
 
 router.delete('/whitelist/user/:seq', (req, res) =>{
     const request = {
@@ -190,7 +282,7 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
             res.status(200).send("ok")
         })
         .catch(err=>{
-            res.status(500).send(err)
+            res.status(500).send("false")
         })
 });
 
