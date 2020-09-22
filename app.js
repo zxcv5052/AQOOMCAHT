@@ -5,9 +5,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const swaggerDoc = require('./public/swaggerDoc')
 const optionsRouter = require('./routes/options');
-const accumulationsRouter = require('./routes/accumaltions')
+const messageRouter = require('./routes/message')
 const roomsRouter = require('./routes/rooms')
-const usersRouter = require('./routes/users');
+const usersRouter = require('./routes/user');
 
 const { sequelize } = require('./models');
 
@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/users', usersRouter);
 app.use('/rooms', roomsRouter);
 app.use('/options', optionsRouter);
-app.use('/accumulations', accumulationsRouter);
+app.use('/messages', messageRouter);
 
 app.use(function(req, res, next) {
     next(createError(404));

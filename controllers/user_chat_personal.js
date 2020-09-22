@@ -31,7 +31,19 @@ exports.findOrCreate = (request) => {
  */
 exports.findByChat = request =>{
     return new Promise((resolve, reject) => {
-        User_Chat_Personal.findAll({where: {chat_id: request.chat_id}})
+        User_Chat_Personal.findAll(
+            {
+                attributes: ['seq','restriction_date','is_admin','is_bot','is_active'],
+                include: [
+                    {
+                        required: false,
+                        model: db.User,
+                        attributes: ['user_id','first_name', 'last_name','user_name']
+                    }
+                ],
+                where: {chat_id: request.chat_id},
+                raw: false
+            })
             .then(result=>{
                 resolve(result);
             })
@@ -42,11 +54,13 @@ exports.findByChat = request =>{
 }
 
 /**
+ * 안 쓸 수도?
+ * @param request ( chat_id )
  * @returns {Promise<db.User_Chat_Personal>}
  */
-exports.findByIsAdmin = () =>{
+exports.findByIsAdmin = request =>{
     return new Promise((resolve, reject) => {
-        User_Chat_Personal.findAll({where: {is_bot: true}})
+        User_Chat_Personal.findAll({where: {is_bot: true, chat_id: request.chat_id}})
             .then(result=>{
                 resolve(result);
             })
@@ -55,5 +69,3 @@ exports.findByIsAdmin = () =>{
             })
     })
 }
-
-

@@ -37,9 +37,7 @@ exports.findByChatUser = request => {
     return new Promise(async (resolve, reject) => {
         Message.findAll({
             where:{
-                message_type: {
-                    [Op.or] : message.message_type
-                },
+                message_type: message.message_type,
                 chat_id: message.chat_id,
                 user_id: message.user_id
             }
@@ -60,3 +58,6 @@ exports.findByTypeDate = request =>{
 
 }
 
+exports.sendReply = request => {
+    // message send ( telegram api로 작성하면 됨. )
+}

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Chat_Bot_Activities = sequelize.define('Chat_Bot_Activities', {
+    const Chat_Bot_Activity = sequelize.define('Chat_Bot_Activity', {
         seq:{
             primaryKey: true,
             type: Sequelize.BIGINT,
@@ -13,5 +13,5 @@ module.exports = (sequelize, Sequelize) => {
         freezeTableName: true
     });
 
-    return Chat_Bot_Activities;
+    return Chat_Bot_Activity;
 }

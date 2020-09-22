@@ -20,6 +20,10 @@ module.exports = (sequelize, Sequelize) => {
         is_bot:{
             type: Sequelize.BOOLEAN,
             defaultValue: false
+        },
+        is_active:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
         }
     },{
         timestamps: false,

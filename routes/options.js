@@ -102,6 +102,7 @@ router.post('/blacklist/words/', (req,res) => {
             res.status(500).send(err)
         })
 });
+
 //region Swagger DELETE /options/blacklist/words/:blacklist_seq
 /**
  * @swagger
@@ -284,7 +285,7 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
         })
 });
 
-//region Swagger /options/greeting/{chat_id}
+//region Swagger GET /options/greeting/{chat_id}
 /**
  * @swagger
  * /options/greeting/{chat_id}:

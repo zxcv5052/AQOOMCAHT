@@ -26,11 +26,12 @@ exports.updateOrCreate = request => {
  * @param request ( user_id )
  * @returns {Promise<List<db.User>>}
  */
-exports.findByUser = request =>{
+exports.findByPk = request =>{
     return new Promise((resolve, reject) => {
-        User.findAll({where: {user_id: request.user_id}})
+        User.findByPk(request.user_id)
             .then(result=>{
-                resolve(result);
+                if(result===undefined) resolve();
+                else resolve(result);
             })
             .catch(err=>{
                 reject(err);
