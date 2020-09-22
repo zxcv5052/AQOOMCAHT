@@ -115,6 +115,7 @@ router.get('/chat/:chat_id/user/:user_id/type/:message_type', (req, res)=>{
         user_id: req.params.user_id,
         chat_id: req.params.chat_id,
         message_type: req.params.message_type
+
     };
 
     Message.findByChatUser(request)
@@ -126,7 +127,11 @@ router.get('/chat/:chat_id/user/:user_id/type/:message_type', (req, res)=>{
         })
 });
 
+router.get('/:messaged_id/chat/:message_id', (req,res) =>{
+    const request = {
 
+    }
+})
 router.delete('/')
 
 module.exports = router;

@@ -1,5 +1,7 @@
 'use strict'
 const express = require('express');
+const multer = require('multer');
+const upload = multer();
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const chat_greeting = require('../controllers/chat_greeting.controller');
 const user_chat_whitelist = require('../controllers/user_chat_whitelist');
@@ -338,23 +340,21 @@ router.get('/greeting/:chat_id', (req, res) =>{
  *   post:
  *     tags:
  *     - "Greetings"
+ *     consumes:
+ *          - multipart/form-data
  *     parameters:
- *      - in: body
- *        name: greet
- *        schema:
- *          type: object
- *          properties:
- *              greeting_text:
- *                  type: string
- *                  description: it's type TEXT
- *              greeting_image:
- *                  type: string
- *              button:
- *                  type: string
- *                  description: it's type TEXT
- *              chat_id:
- *                  type: integer
- *                  required: true
+ *      - in: formData
+ *        name: greeting_text
+ *        type: string
+ *      - in: formData
+ *        name: greeting_image
+ *        type: file
+ *      - in: formData
+ *        name: button
+ *        type: string
+ *      - in: formData
+ *        name: chat_id
+ *        type: integer
  *     description: Create Greeting Message
  *     produces:
  *      - application/json
@@ -372,13 +372,13 @@ router.get('/greeting/:chat_id', (req, res) =>{
  */
 //endregion
 
-router.post('/greeting', (req,res)=>{
+router.post('/greeting',upload.array('greeting_image'), (req,res)=>{
     const request = {
         greeting_text: req.body.greeting_text,
-        greeting_image: req.body.greeting_image,
         button: req.body.button,
         chat_id: req.body.chat_id
     }
+    console.log(req.files);
     chat_greeting.create(request)
         .then(()=>{
             res.status(200).send("ok")
@@ -491,8 +491,5 @@ router.put('/greeting', (req,res)=>{
         })
 });
 
-router.post('/announce', (req, res)=>{
-
-})
 
 module.exports = router;

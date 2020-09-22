@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const swaggerDoc = require('./public/swaggerDoc')
+const swaggerDoc = require('./public/swaggerDoc');
 const optionsRouter = require('./routes/options');
 const messageRouter = require('./routes/message')
 const roomsRouter = require('./routes/rooms')
@@ -82,8 +82,7 @@ const User_chat = require('./controllers/user_chat_personal')
 
 // const regex = emojiRegex();
 
-
-//<editor-fold desc="Chat Create Function">
+//<editor-fold desc="Function">
 /**
  * Listener user create chat when inviting bot
  * Step
@@ -120,7 +119,6 @@ function chatCreate(request, type){
             // slack or announce for developer
         })
 }
-//</editor-fold>
 
 async function checkAndCreateUser(user, ctx) {
     const request = {
@@ -134,6 +132,7 @@ async function checkAndCreateUser(user, ctx) {
     await User.updateOrCreate(request);
     await User_chat.findOrCreate(request);
 }
+//</editor-fold>
 
 //<editor-fold desc="Listener creating chat">
 bot.on('supergroup_chat_created', ctx=>{
