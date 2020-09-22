@@ -53,10 +53,10 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
         });
 });
 
-//region Swagger POST /options/blacklist/words/
+//region Swagger POST /options/blacklist/words
 /**
  * @swagger
- * /options/blacklist/words/:
+ * /options/blacklist/words:
  *   post:
  *     tags:
  *     - "BlackListWords"
@@ -89,7 +89,7 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
  */
 //endregion
 
-router.post('/blacklist/words/', (req,res) => {
+router.post('/blacklist/words', (req,res) => {
     const request = {
         chat_id : req.body.chat_id,
         word : req.body.word
@@ -194,10 +194,10 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
         })
 });
 
-//region Swagger POST /options/whitelist/user/
+//region Swagger POST /options/whitelist/user
 /**
  * @swagger
- * /options/whitelist/user/:
+ * /options/whitelist/user:
  *   post:
  *     tags:
  *     - "WhiteListUsers"
@@ -331,10 +331,10 @@ router.get('/greeting/:chat_id', (req, res) =>{
             res.status(500).send(err);
         })
 })
-//region Swagger POST /options/greeting/
+//region Swagger POST /options/greeting
 /**
  * @swagger
- * /options/greeting/:
+ * /options/greeting:
  *   post:
  *     tags:
  *     - "Greetings"
@@ -372,7 +372,7 @@ router.get('/greeting/:chat_id', (req, res) =>{
  */
 //endregion
 
-router.post('/greeting/', (req,res)=>{
+router.post('/greeting', (req,res)=>{
     const request = {
         greeting_text: req.body.greeting_text,
         greeting_image: req.body.greeting_image,
@@ -429,10 +429,10 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
             res.status(500).send("false")
         })
 })
-//region Swagger PUT /options/greeting/
+//region Swagger PUT /options/greeting
 /**
  * @swagger
- * /options/greeting/:
+ * /options/greeting:
  *   put:
  *     tags:
  *     - "Greetings"
@@ -470,7 +470,7 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.put('/greeting/', (req,res)=>{
+router.put('/greeting', (req,res)=>{
     const request = {
         greeting_seq: req.body.greeting_seq,
         greeting_text: req.body.greeting_text,
@@ -489,6 +489,10 @@ router.put('/greeting/', (req,res)=>{
         .catch(()=>{
             res.status(500).send("false");
         })
+});
+
+router.post('/announce', (req, res)=>{
+
 })
 
 module.exports = router;

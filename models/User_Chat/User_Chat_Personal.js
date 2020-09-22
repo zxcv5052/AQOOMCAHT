@@ -24,10 +24,15 @@ module.exports = (sequelize, Sequelize) => {
         is_active:{
             type: Sequelize.BOOLEAN,
             defaultValue: true
+        },
+        updatedAt:{
+            type: Sequelize.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
         }
     },{
         timestamps: false,
-        freezeTableName: true
+        freezeTableName: true,
+
     });
 
     return User_Chat_Personal;

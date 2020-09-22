@@ -3,6 +3,9 @@ const db = require("../models");
 const sequelize = require("sequelize");
 const Op = sequelize.Op;
 const Message = db.Message;
+const axios = require('axios').default
+const CancelToken = axios.CancelToken;
+const source = CancelToken.source();
 
 exports.create = (request) => {
     const message = {
@@ -60,4 +63,15 @@ exports.findByTypeDate = request =>{
 
 exports.sendReply = request => {
     // message send ( telegram api로 작성하면 됨. )
+    return new Promise(async (resolve, reject) => {
+       const result = await axios.post(`https://api.telegram.org/bot${require('../config/botkey.json').test_botKey}/sendMessage`,{
+           chat_id: request.chat_id,
+           text: request.message,
+           reply_to_message_id : request.message_id
+       }, {
+           cancelToken: source.token
+       });
+       if( result.data.ok ) resolve();
+       else reject();
+    });
 }

@@ -38,3 +38,7 @@ exports.findByPk = request =>{
             })
     })
 }
+
+exports.findByName = request => {
+
+}

@@ -82,6 +82,8 @@ const User_chat = require('./controllers/user_chat_personal')
 
 // const regex = emojiRegex();
 
+
+//<editor-fold desc="Chat Create Function">
 /**
  * Listener user create chat when inviting bot
  * Step
@@ -117,6 +119,20 @@ function chatCreate(request, type){
             return false;
             // slack or announce for developer
         })
+}
+//</editor-fold>
+
+async function checkAndCreateUser(user, ctx) {
+    const request = {
+        user_id : user.id,
+        chat_id : ctx.chat.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        user_name: user.username,
+        is_bot: user.is_bot
+    };
+    await User.updateOrCreate(request);
+    await User_chat.findOrCreate(request);
 }
 
 //<editor-fold desc="Listener creating chat">
@@ -233,6 +249,9 @@ bot.on('text',  async ctx => {
         reply_to_message_id : ctx.message.reply_to_message !== undefined ? ctx.message.reply_to_message.message_id : null,
         entity : ctx.message.entities
     }
+    console.log(ctx.from);
+    await checkAndCreateUser(ctx.from, ctx)
+
     if(request.entity !== undefined){
         request.message_type = "entity_text"
     }
@@ -240,30 +259,33 @@ bot.on('text',  async ctx => {
         const whiteUser = (await Whitelist.findByChatIdUserId(request));
         if(whiteUser === null){
             const words = (await Blacklist.findByChatId(request));
-            words.some(
-                word=> {
-                    if(ctx.message.text.includes(word.word)){
-                        bot.telegram.deleteMessage(request.chat_id, ctx.update.message.message_id)
-                            .then(() =>{
-                                request.message_type = "delete"
-                            })
-                            .catch(() =>{
-                            })
-                        return true;
+            if(words!==undefined) {
+                words.some(
+                    word => {
+                        if (ctx.message.text.includes(word.word)) {
+                            bot.telegram.deleteMessage(request.chat_id, ctx.update.message.message_id)
+                                .then(() => {
+                                    request.message_type = "delete"
+                                })
+                                .catch(() => {
+                                })
+                            return true;
+                        }
                     }
-                }
-            )
+                )
+            }
         }
         Message.create(request)
             .then(()=>{
             })
             .catch((err)=>{
+                console.log(err)
             })
     }catch (err) {
+        console.log(err)
 
     }
 })
-
 //</editor-fold>
 
 bot.launch();

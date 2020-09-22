@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
     const Chat = sequelize.define('Chat', {
         chat_id:{
-            type: Sequelize.BIGINT,
+            type: Sequelize.BIGINT(20),
             primaryKey: true
         },
         user_id:{

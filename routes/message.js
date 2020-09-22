@@ -3,10 +3,10 @@ const router = express.Router();
 const Message = require('../controllers/message.controller')
 const Bot_activity = require('../controllers/chat_bot_activity')
 
-//region Swagger POST /messages/reply/
+//region Swagger POST /messages/reply
 /**
  * @swagger
- * /messages/reply/:
+ * /messages/reply:
  *   post:
  *     tags:
  *     - "Messages"
@@ -42,11 +42,11 @@ const Bot_activity = require('../controllers/chat_bot_activity')
  */
 //endregion
 
-router.post('/reply/', (req,res)=>{
+router.post('/reply', (req,res)=>{
     const message_request = {
         chat_id: req.body.chat_id,
         message: req.body.message,
-        reply_to_message_id : req.body.message_id,
+        reply_to_message_id : req.body.reply_to_message_id,
     };
     const bot_request = {
         action : 'reply',
@@ -58,11 +58,12 @@ router.post('/reply/', (req,res)=>{
                 .then(result=>{
 
                 })
-                .catch(()=>{
-
+                .catch((err)=>{
+                    console.log(err)
                 })
         })
         .catch(err=>{
+            console.log(err)
             res.status(500).send(err);
         })
 
@@ -124,5 +125,8 @@ router.get('/chat/:chat_id/user/:user_id/type/:message_type', (req, res)=>{
             res.status(500).send(err);
         })
 });
+
+
+router.delete('/')
 
 module.exports = router;
