@@ -1,6 +1,9 @@
 'use strict'
 const express = require('express');
 const multer = require('multer');
+const storage = require('../public/cloudeStorage');
+const { format } = require('util');
+
 const upload = multer();
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const chat_greeting = require('../controllers/chat_greeting.controller');
@@ -41,7 +44,6 @@ const router = express.Router();
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.get('/blacklist/words/:chat_id', (req,res) => {
     const request = {
         chat_id : req.params.chat_id
@@ -90,7 +92,6 @@ router.get('/blacklist/words/:chat_id', (req,res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.post('/blacklist/words', (req,res) => {
     const request = {
         chat_id : req.body.chat_id,
@@ -132,7 +133,6 @@ router.post('/blacklist/words', (req,res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
     const request = {
         blacklist_seq :req.params.blacklist_seq
@@ -182,7 +182,6 @@ router.delete('/blacklist/words/:blacklist_seq', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.get('/whitelist/user/:chat_id', (req, res) => {
     const request = {
         chat_id : req.params.chat_id
@@ -231,7 +230,6 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.post('/whitelist/user', (req, res) => {
     const request = {
         user_id : req.body.user_id,
@@ -273,7 +271,6 @@ router.post('/whitelist/user', (req, res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.delete('/whitelist/user/:seq', (req, res) =>{
     const request = {
         seq : req.params.seq
@@ -319,7 +316,6 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.get('/greeting/:chat_id', (req, res) =>{
     const request = {
         seq : req.params.chat_id
@@ -371,22 +367,48 @@ router.get('/greeting/:chat_id', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
-router.post('/greeting',upload.array('greeting_image'), (req,res)=>{
+router.post('/greeting',upload.single('greeting_image'), async (req,res)=>{
     const request = {
         greeting_text: req.body.greeting_text,
         button: req.body.button,
         chat_id: req.body.chat_id
     }
-    console.log(req.files);
-    chat_greeting.create(request)
-        .then(()=>{
-            res.status(200).send("ok")
-        })
-        .catch(err=>{
-            res.status(500).send(err);
-        })
-})
+    if(req.file !== undefined){
+        const blob = storage.file(req.file.originalname);
+        const blobStream = blob.createWriteStream({
+            resumable: false
+        });
+        blobStream.on('error', err => {
+            console.log(err);
+            return 'error';
+        });
+        blobStream.on('finish', () => {
+            // The public URL can be used to directly access the file via HTTP.
+            const publicUrl = format(
+                `https://storage.googleapis.com/${storage.name}/${blob.name}`
+            );
+            request['greeting_image'] = publicUrl;
+
+            chat_greeting.create(request)
+                .then(()=>{
+                    res.status(200).send("ok")
+                })
+                .catch(err=>{
+                    console.log(err)
+                    res.status(500).send(err);
+                })
+        });
+        blobStream.end(req.file.buffer);
+    }else{
+        chat_greeting.create(request)
+            .then(()=>{
+                res.status(200).send("ok")
+            })
+            .catch(err=>{
+                res.status(500).send(err);
+            })
+    }
+});
 
 //region Swagger DELETE /options/greeting/:greeting_seq
 /**
@@ -415,7 +437,6 @@ router.post('/greeting',upload.array('greeting_image'), (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-
 router.delete('/greeting/:greeting_seq', (req,res)=>{
     const request = {
         greeting_seq : req.body.greeting_seq
@@ -436,23 +457,22 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
  *   put:
  *     tags:
  *     - "Greetings"
+ *     consumes:
+ *      - multipart/form-data
  *     parameters:
- *       - in: body
- *         name: greet
- *         schema:
- *              type: object
- *              properties:
- *                  greeting_seq:
- *                      type: integer
- *                      required: true
- *                  greeting_text:
- *                      type: string
- *                  greeting_image:
- *                      type: string
- *                  button:
- *                      type: string
- *                  is_active:
- *                      type: boolean
+ *      - in: formData
+ *        name: greeting_text
+ *        type: string
+ *      - in: formData
+ *        name: greeting_image
+ *        type: file
+ *      - in: formData
+ *        name: button
+ *        type: string
+ *      - in: formData
+ *        name: greeting_seq
+ *        type: integer
+ *        required: true
  *
  *     description: Update Greeting Message
  *     produces:

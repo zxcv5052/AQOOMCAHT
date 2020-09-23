@@ -20,12 +20,11 @@
     "sequelize-cli": "^6.2.0",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
-    "telegraf": "^3.38.0",
-    "telegraf-getchatmembers": "^1.0.0"
+    "telegraf": "^3.38.0"
   },
   "devDependencies": {
+    "@google-cloud/storage": "^5.3.0",
     "axios": "^0.20.0",
-    "firebase-admin": "^9.2.0",
     "multer": "^1.4.2"
   }
 }

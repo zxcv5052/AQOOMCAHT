@@ -62,7 +62,7 @@ const bot_id = require('./config/botkey.json').test_botID;
 // )
 
 bot.on('channel_post', ctx=>{
-    console.log(ctx.update.channel_post.text);
+    console.log("channel_post -> " , ctx.update.channel_post.text);
 })
 
 bot.use((ctx,next)=>{
@@ -70,7 +70,7 @@ bot.use((ctx,next)=>{
 })
 
 bot.on('edited_channel_post', ctx=>{
-    console.log(ctx.update.channel_post.text);
+    console.log("edited_channel_post -> " ,ctx.update.channel_post.text);
 })
 const emojiRegex = require('emoji-regex')
 const Blacklist = require('./controllers/chat_blacklist.controller')

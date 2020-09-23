@@ -1,7 +1,7 @@
 const db = require("../models");
 const Chat_greeting = db.Chat_greeting;
 
-// Create and Save a new Word
+// Create and Save a new Greeting
 exports.create = (request) => {
     return new Promise(async (resolve, reject) => {
         if(request.greeting_image === undefined && request.greeting_text === undefined) resolve(500);
@@ -10,8 +10,8 @@ exports.create = (request) => {
                 if(!data) resolve();
                 else resolve();
             })
-            .catch(()=> {
-                reject(500);
+            .catch((err)=> {
+                reject(err);
             });
     })
 };
