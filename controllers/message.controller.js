@@ -64,14 +64,27 @@ exports.findByTypeDate = request =>{
 exports.sendReply = request => {
     // message send ( telegram api로 작성하면 됨. )
     return new Promise(async (resolve, reject) => {
+       console.log(request.message_id);
        const result = await axios.post(`https://api.telegram.org/bot${require('../config/botkey.json').test_botKey}/sendMessage`,{
            chat_id: request.chat_id,
            text: request.message,
-           reply_to_message_id : request.message_id
+           reply_to_message_id : request.reply_to_message_id
        }, {
            cancelToken: source.token
        });
-       if( result.data.ok ) resolve();
+       if( result.data.ok ) {
+           request['message_id'] = result.data.result.message_id;
+           request['user_id'] = result.data.result.from.id;
+           request['message_type'] = 'bot_reply'
+           this.create(request)
+               .then(()=>{
+                   resolve();
+               })
+               .catch(err=>{
+                   console.log(err);
+               })
+           resolve();
+       }
        else reject();
     });
 }

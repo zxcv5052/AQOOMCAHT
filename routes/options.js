@@ -8,6 +8,7 @@ const upload = multer();
 const chat_blacklist = require('../controllers/chat_blacklist.controller');
 const chat_greeting = require('../controllers/chat_greeting.controller');
 const user_chat_whitelist = require('../controllers/user_chat_whitelist');
+const chat_faq = require('../controllers/chat_FAQ');
 const router = express.Router();
 
 //region Swagger /options/blacklist/words/{chat_id}
@@ -373,33 +374,10 @@ router.post('/greeting',upload.single('greeting_image'), async (req,res)=>{
         button: req.body.button,
         chat_id: req.body.chat_id
     }
-    if(req.file !== undefined){
-        const blob = storage.file(req.file.originalname);
-        const blobStream = blob.createWriteStream({
-            resumable: false
-        });
-        blobStream.on('error', err => {
-            console.log(err);
-            return 'error';
-        });
-        blobStream.on('finish', () => {
-            // The public URL can be used to directly access the file via HTTP.
-            const publicUrl = format(
-                `https://storage.googleapis.com/${storage.name}/${blob.name}`
-            );
-            request['greeting_image'] = publicUrl;
-
-            chat_greeting.create(request)
-                .then(()=>{
-                    res.status(200).send("ok")
-                })
-                .catch(err=>{
-                    console.log(err)
-                    res.status(500).send(err);
-                })
-        });
-        blobStream.end(req.file.buffer);
-    }else{
+    uploading(req.file).then(result=>{
+        if(result!==undefined) {
+            request['greeting_image'] = result;
+        }
         chat_greeting.create(request)
             .then(()=>{
                 res.status(200).send("ok")
@@ -407,9 +385,10 @@ router.post('/greeting',upload.single('greeting_image'), async (req,res)=>{
             .catch(err=>{
                 res.status(500).send(err);
             })
-    }
-});
+    }).catch(()=>{
 
+    });
+});
 //region Swagger DELETE /options/greeting/:greeting_seq
 /**
  * @swagger
@@ -494,22 +473,198 @@ router.put('/greeting', (req,res)=>{
     const request = {
         greeting_seq: req.body.greeting_seq,
         greeting_text: req.body.greeting_text,
-        greeting_image: req.body.greeting_image,
         button: req.body.button,
         is_active: req.body.is_active
     }
-    /**
-     * Check Validation 생각 안해봄
-     */
-    chat_greeting.update(request)
+    uploading(req.file)
         .then(result=>{
-            if(result === undefined) res.status(204).send();
-            else res.status(200).send("ok")
-        })
-        .catch(()=>{
-            res.status(500).send("false");
-        })
+        if(result!==undefined) {
+            request['greeting_image'] = result;
+        }
+        chat_greeting.update(request)
+            .then(()=>{
+                if(result === undefined) res.status(204).send();
+                else res.status(200).send("ok")
+            })
+            .catch(err=>{
+                res.status(500).send(err);
+            })
+    }).catch(()=>{
+
+    });
 });
 
+
+//region Swagger POST /options/faq
+/**
+ * @swagger
+ * /options/faq:
+ *   post:
+ *     tags:
+ *     - "FAQ"
+ *     consumes:
+ *          - multipart/form-data
+ *     parameters:
+ *      - in: formData
+ *        name: request_content_text
+ *        type: string
+ *      - in: formData
+ *        name: response_content_text
+ *        type: string
+ *      - in: formData
+ *        name: response_content_image
+ *        type: file
+ *      - in: formData
+ *        name: response_image_type
+ *        type: string
+ *      - in: formData
+ *        name: button
+ *        type: string
+ *      - in: formData
+ *        name: chat_id
+ *        type: integer
+ *     description: Create FAQ
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
+    const request = {
+        request_content_text: req.body.request_content_text,
+        response_content_text : req.body.response_content_text,
+        response_image_type: req.body.response_image_type,
+        button: req.body.button,
+        chat_id: req.body.chat_id
+    }
+    if(request.response_content_text.trim() !== '' || request.response_content_text !== undefined){
+        request["request_content_text"] = '!'+request.response_content_text;
+    }
+    uploading(req.file)
+        .then(result=>{
+        if(result!==undefined) {
+            request['response_content_image'] = result;
+        }
+        chat_faq.create(request)
+            .then(()=>{
+                res.status(200).send("ok")
+            })
+            .catch(err=>{
+                res.status(500).send(err);
+            })
+    }).catch(()=>{
+
+    });
+});
+
+//region Swagger PUT /options/faq
+/**
+ * @swagger
+ * /options/faq:
+ *   put:
+ *     tags:
+ *     - "FAQ"
+ *     consumes:
+ *      - multipart/form-data
+ *     parameters:
+ *      - in: formData
+ *        name: faq_seq
+ *        type: integer
+ *      - in: formData
+ *        name: request_content_text
+ *        type: string
+ *      - in: formData
+ *        name: response_content_text
+ *        type: string
+ *      - in: formData
+ *        name: response_content_image
+ *        type: file
+ *      - in: formData
+ *        name: response_image_type
+ *        type: string
+ *      - in: formData
+ *        name: button
+ *        type: string
+ *      - in: formData
+ *        name: is_active
+ *        type: boolean
+ *     description: Update FAQ
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.put('/greeting', (req,res)=>{
+    const request = {
+        faq_seq: req.body.faq_seq,
+        request_content_text: req.body.request_content_text,
+        response_content_text : req.body.response_content_text,
+        response_image_type: req.body.response_image_type,
+        button: req.body.button,
+        is_active: req.body.is_active
+    };
+    uploading(req.file)
+        .then(result=>{
+            if(result!==undefined) {
+                request['response_content_image'] = result;
+            }
+            chat_faq.update(request)
+                .then(()=>{
+                    if(result === undefined) res.status(204).send();
+                    else res.status(200).send("ok")
+                })
+                .catch(err=>{
+                    res.status(500).send(err);
+                })
+        }).catch(()=>{
+
+    });
+});
+function uploading(requestFile){
+    return new Promise(async (resolve, reject) => {
+        if(requestFile === undefined) {
+            resolve();
+            return;
+        }
+        const date = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
+        const fileArray = requestFile.originalname.split('.');
+        const fileName = fileArray[0].concat(date).concat('.').concat(fileArray[1]);
+        const blob = storage.file(fileName);
+        const blobStream = blob.createWriteStream({
+            resumable: false
+        });
+        blobStream.on('error', err => {
+            reject();
+        });
+        blobStream.on('finish', () => {
+            // The public URL can be used to directly access the file via HTTP.
+            const publicUrl = format(
+                `https://storage.googleapis.com/${storage.name}/${blob.name}`
+            );
+            resolve(publicUrl);
+        });
+        blobStream.end(requestFile.buffer);
+    });
+};
 
 module.exports = router;
