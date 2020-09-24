@@ -52,3 +52,20 @@ exports.update = request =>{
             })
     });
 }
+
+exports.delete = request=>{
+    return new Promise(async (resolve, reject) => {
+        Chat_FAQ.delete({
+            where:{
+                chat_id: request.chat_id
+            }
+        })
+            .then(result=>{
+                if(result===undefined) resolve()
+                else resolve(result)
+            })
+            .catch(err=>{
+                reject(err);
+            })
+    });
+}

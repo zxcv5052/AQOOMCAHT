@@ -614,7 +614,7 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.put('/greeting', (req,res)=>{
+router.put('/faq', (req,res)=>{
     const request = {
         faq_seq: req.body.faq_seq,
         request_content_text: req.body.request_content_text,
@@ -640,6 +640,49 @@ router.put('/greeting', (req,res)=>{
 
     });
 });
+
+//region Swagger DELETE /options/faq/:faq_seq
+/**
+ * @swagger
+ * /options/faq/{faq_seq}:
+ *  delete:
+ *     tags:
+ *     - "FAQ"
+ *     parameters:
+ *       - name: faq_seq
+ *         in : path
+ *         type: integer
+ *     description: Delete FAQ
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.delete('/greeting/:greeting_seq', (req,res)=>{
+    const request = {
+        greeting_seq : req.body.faq_seq
+    };
+    chat_faq.delete(request)
+        .then(result=>{
+            if(result === undefined) res.status(204).send();
+            else res.status(200).send("ok");
+        })
+        .catch(()=>{
+            res.status(500).send("false")
+        })
+});
+
+
 function uploading(requestFile){
     return new Promise(async (resolve, reject) => {
         if(requestFile === undefined) {

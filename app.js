@@ -248,7 +248,6 @@ bot.on('text',  async ctx => {
         reply_to_message_id : ctx.message.reply_to_message !== undefined ? ctx.message.reply_to_message.message_id : null,
         entity : ctx.message.entities
     }
-    console.log(ctx.from);
     await checkAndCreateUser(ctx.from, ctx)
 
     if(request.entity !== undefined){
