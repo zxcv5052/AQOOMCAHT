@@ -53,7 +53,6 @@ db.Chat_blacklist.uniqueKeys = {
         fields: ['word', 'chat_id']
     }
 }
-
 db.Chat_announce.belongsTo(db.Chat, {
     foreignKey: "chat_id",
 })
@@ -78,6 +77,7 @@ db.User_Chat_Personal.belongsTo(db.User,{
 db.User_Chat_Personal.belongsTo(db.Chat, {
     foreignKey: "chat_id",
 });
+
 db.User_Chat_Whitelist.belongsTo(db.User, {
     foreignKey: "user_id",
 });

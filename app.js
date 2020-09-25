@@ -65,10 +65,6 @@ bot.on('channel_post', ctx=>{
     console.log("channel_post -> " , ctx.update.channel_post.text);
 })
 
-bot.use((ctx,next)=>{
-    return next();
-})
-
 bot.on('edited_channel_post', ctx=>{
     console.log("edited_channel_post -> " ,ctx.update.channel_post.text);
 })
@@ -82,80 +78,8 @@ const User_chat = require('./controllers/user_chat_personal')
 
 // const regex = emojiRegex();
 
-//<editor-fold desc="Function">
-/**
- * Listener user create chat when inviting bot
- * Step
- * 1. create chat_room
- * 2. if user already exists update user or not create user
- * 3. if user_chat already exists finish or not create user_chat
- */
-function chatCreate(request, type){
-    let _request = {
-        chat_id: request.chat.id,
-        user_id: request.from.id,
-        type: type,
-        first_name: request.message.from.first_name,
-        last_name: request.message.from.last_name,
-        user_name: request.message.from.username,
-        group_name: request.chat.title,
-        is_admin: true
-    }
-    Chat.create(_request)
-        .then( ()=>{
-            User.updateOrCreate(_request)
-                .then( ()=>{
-                    User_chat.findOrCreate(_request)
-                        .then(()=>{
-                        })
-                        .catch(()=>{
-                        })
-                })
-                .catch(()=>{
-                })
-        })
-        .catch( ()=>{
-            return false;
-            // slack or announce for developer
-        })
-}
-
-async function checkAndCreateUser(user, ctx) {
-    const request = {
-        user_id : user.id,
-        chat_id : ctx.chat.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        user_name: user.username,
-        is_bot: user.is_bot
-    };
-    await User.updateOrCreate(request);
-    await User_chat.findOrCreate(request);
-}
-//</editor-fold>
-
-//<editor-fold desc="Listener creating chat">
-bot.on('supergroup_chat_created', ctx=>{
-    chatCreate(ctx, 'supergroup');
-});
-bot.on('channel_chat_created',  ctx=>{
-    chatCreate(ctx, 'channel');
-});
-bot.on('group_chat_created',  ctx=>{
-    chatCreate(ctx, 'group');
-});
-//</editor-fold>
-
 //<editor-fold desc=" Listener left & join member">
 
-/**
- * Listener join member ( after Need to bot )
- * Step
- * 0. first check member is chat_bot
- * 1. if user already exists update or not create user
- * 2. if User_chat don't exists create user_chat
- * 3.
- */
 bot.on("new_chat_members", async ctx=>{
     const users = ctx.message.new_chat_members;
     users.some(

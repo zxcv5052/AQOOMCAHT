@@ -129,10 +129,10 @@ router.get('/chat/:chat_id/user/:user_id/type/:message_type', (req, res)=>{
 /**
  * 정제쪽이 어렵다..
  */
-//region Swagger GET /messages/chat/:chat_id/type/:message_type/date_from/:date_from/date_to/:date_to
+//region Swagger GET /messages/chat/:chat_id/type/:message_type/date-from/:date_from/date-to/:date_to
 /**
  * @swagger
- * /messages/chat/{chat_id}/type/{message_type}/date_from/{date_from}/date_to/{date_to}:
+ * /messages/chat/{chat_id}/type/{message_type}/date-from/{date_from}/date-to/{date_to}:
  *   get:
  *     tags:
  *     - "Messages"
@@ -173,7 +173,7 @@ router.get('/chat/:chat_id/user/:user_id/type/:message_type', (req, res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.get('/chat/:chat_id/type/:message_type/date_from/:date_from/date_to/:date_to', (req,res)=>{
+router.get('/chat/:chat_id/type/:message_type/date-from/:date_from/date-to/:date_to', (req,res)=>{
     const request ={
         chat_id: req.params.chat_id,
         message_type: req.params.message_type ,
@@ -189,11 +189,6 @@ router.get('/chat/:chat_id/type/:message_type/date_from/:date_from/date_to/:date
         })
 });
 
-router.get('/:messaged_id/chat/:message_id', (req,res) =>{
-    const request = {
-
-    }
-})
 router.delete('/')
 
 module.exports = router;

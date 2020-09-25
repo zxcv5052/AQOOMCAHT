@@ -13,6 +13,10 @@ module.exports = (sequelize, Sequelize) => {
         user_name:{
             type: Sequelize.STRING(50)
         },
+        is_bot:{
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
+        },
         warning_pt:{
             type: Sequelize.INTEGER(10),
             defaultValue: 0
