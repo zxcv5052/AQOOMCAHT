@@ -25,10 +25,6 @@ exports.create = request => {
     });
 };
 
-/**
- * @param request ( user_id )
- * @returns {Promise<db.Chat>}
- */
 exports.findByUser = request =>{
     return new Promise(async (resolve, reject) => {
         Chat.findAll({
@@ -46,11 +42,6 @@ exports.findByUser = request =>{
     });
 }
 
-/**
- *
- * @param request ( chat_id )
- * @returns {Promise<db.Chat>}
- */
 exports.findByChat = request => {
     return new Promise(async (resolve, reject) => {
         Chat.findByPk(request.chat_id)
@@ -63,11 +54,24 @@ exports.findByChat = request => {
     });
 }
 
-/**
- * title이 바뀔 때는 감지가 가능하다.
- * but, 그룹-> 채널 | 그룹 -> supergroup | channel -> group 감지가 가능하려나..?
- * 고려해야 할 사항 : join message 를 만약 true로 바꾼다면 greeting Message 는 지워져야하는가?(is_active change false?)
- */
+exports.updateForMigrate = request => {
+    return new Promise(async (resolve, reject) => {
+        Chat.update(
+            {
+                type: "moved",
+                is_active: 0,
+            },
+            {where: {chat_id: request.chat_id}})
+            .then((num)=>{
+                if(num === 0) resolve();
+                else resolve(num);
+            })
+            .catch( (err) => {
+                reject(err)
+            });
+    });
+}
+
 exports.updateForRestriction = request => {
     return new Promise(async (resolve, reject) => {
         Chat.update(
@@ -79,7 +83,7 @@ exports.updateForRestriction = request => {
                 anti_left_message: request.anti_left_message,
                 anti_longname: request.anti_longname,
                 anti_flood: request.anti_flood,
-                anti_command: request.anti_command
+                anti_command: request.anti_command,
             },
             {where: {chat_id: request.chat_id}})
             .then((num)=>{

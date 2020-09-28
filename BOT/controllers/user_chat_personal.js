@@ -1,6 +1,7 @@
 const db = require("../models");
+const sequelize = require('sequelize')
+const moment = require('moment');
 const User_Chat_Personal = db.User_Chat_Personal;
-
 
 exports.updateOrCreate = (request) => {
     return new Promise((resolve, reject) => {
@@ -56,5 +57,31 @@ exports.findByIsAdmin = request =>{
             .catch(err=>{
                 reject(err);
             })
+    })
+}
+
+exports.updateToRestriction = (request,originChatId, bot) => {
+    return new Promise(async (resolve, reject) => {
+        const rule = await db.Chat.findByPk(request.chat_id);
+        const model = await User_Chat_Personal.findOne({where: {chat_id: request.chat_id, user_id : request.user_id}});
+        model.warning_pt += 1;
+        if(rule.restrict_limit <= model.warning_pt){
+            if(rule.restrict_type === 'ban'){
+                await bot.telegram.kickChatMember(originChatId, request.user_id);
+            }else{
+                await bot.telegram.restrictChatMember(originChatId, request.user_id, {
+                    until_date: 10
+                });
+                await function(){
+                    model.restriction_date = moment().unix() + 10
+                }();
+            }
+        }
+        await model.save().then(()=>{
+            resolve();
+        }).catch(err=>{
+            console.log(err)
+            reject();
+        })
     })
 }

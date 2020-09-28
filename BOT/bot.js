@@ -11,5 +11,4 @@ sequelize.sync();
 chatRoom.ListenChatCreated(bot);
 user.userJoinOrLeft(bot);
 message.ListenText(bot);
-
 bot.launch();

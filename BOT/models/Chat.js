@@ -4,13 +4,16 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.BIGINT(20),
             primaryKey: true
         },
+        old_id:{
+            type: Sequelize.BIGINT(20)
+        },
         user_id:{
             type: Sequelize.BIGINT(20)
         },
         type:{
             allowNull: false,
             type: Sequelize.ENUM({
-                values: [ 'private','group','supergroup','channel' ]
+                values: [ 'private','group','supergroup','channel', 'moved']
             })
         },
         group_name:{
@@ -18,13 +21,13 @@ module.exports = (sequelize, Sequelize) => {
         },
         restrict_type:{
             type: Sequelize.ENUM({
-                values: [ 'ban','time' ]
+                values: [ 'ban','restrict' ]
             }),
-            defaultValue: null
+            defaultValue: 'restrict'
         },
         restrict_limit:{
             type: Sequelize.INTEGER(10),
-            defaultValue: 0
+            defaultValue: 5
         },
         restrict_date:{
             type: Sequelize.DATE,

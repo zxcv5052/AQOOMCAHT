@@ -1,6 +1,8 @@
 const Common = require('./Common')
-const blackListWord = require('./controllers/chat_blacklist.controller');
-const whiteListUser = require('./controllers/user_chat_whitelist');
+const Chat = require('./controllers/chat.controller');
+const BlackListWord = require('./controllers/chat_blacklist.controller');
+const WhiteListUser = require('./controllers/user_chat_whitelist');
+const UserChatList = require('./controllers/user_chat_personal')
 exports.ListenText = bot =>{
     bot.on('text', async ctx =>{
         const chat_id = ctx.message.chat.id;
@@ -20,19 +22,25 @@ exports.ListenText = bot =>{
             entity : ctx.message.entity,
             reply_to_message_id : ctx.message.reply_to_message_id
         }
-        await Common.checkAndCreateUser(request);
-        const whiteUser = await whiteListUser.findByChatUser(request);
+        // Check It is Moved Chat Room
+        const chat = await Chat.findByChat(request);
+        request["chat_id"] = chat.old_id !== null ? chat.old_id : chat_id;
+
+        await Common.chatAndUserCreate(request);
+        const whiteUser = await WhiteListUser.findByChatUser(request);
 
         await (async function (){
             if(whiteUser === null){
-                const blackWords = await blackListWord.findByChatId(request);
+                const blackWords = await BlackListWord.findByChatId(request);
                 if (blackWords.length !== 0) {
                     blackWords.some(
                         blackWord => {
                             if (request.message.includes(blackWord.word)) {
                                 request.message_type = 'bot_delete';
-                                bot.telegram.deleteMessage(request.chat_id, request.message_id)
-                                    .then(() => {
+                                bot.telegram.deleteMessage(chat_id, request.message_id)
+                                    .then(async () => {
+                                        await UserChatList.updateToRestriction(request, chat_id, bot);
+                                        ctx.reply("금지어 사용");
                                     })
                                     .catch((err) => {
                                         console.log(err);

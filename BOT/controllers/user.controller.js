@@ -12,6 +12,7 @@ exports.updateOrCreate = request => {
             first_name: request.first_name,
             last_name: request.last_name,
             user_name: request.username,
+            is_bot: request.is_bot,
             updatedAt: new Date()
         })
             .then((result)=>{
