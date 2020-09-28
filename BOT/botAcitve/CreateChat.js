@@ -1,5 +1,5 @@
 const Common = require('./Common')
-const Chat = require('./controllers/chat.controller')
+const Chat = require('../controllers/chat.controller')
 exports.ListenChatCreated = bot=> {
     bot.on("migrate_to_chat_id", async ctx=> {
         const request = {

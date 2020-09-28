@@ -1,5 +1,5 @@
 const Common = require('./Common');
-const Chat = require('./controllers/chat.controller')
+const Chat = require('../controllers/chat.controller')
 exports.userJoinOrLeft = bot=> {
     bot.on('left_chat_member', async ctx=>{
         const member = ctx.message.left_chat_member;
@@ -13,7 +13,7 @@ exports.userJoinOrLeft = bot=> {
             user_name: member.username,
             is_active: false
         }
-        if(member.id === require('./config/botkey.json').test_botID){
+        if(member.id === require('../config/botkey.json').test_botID){
             await Chat.updateOrCreate(request);
             request['status'] = 'kicked';
             request['is_bot'] = true;
@@ -32,7 +32,7 @@ exports.userJoinOrLeft = bot=> {
     bot.on('new_chat_members', async ctx=>{
         const members = ctx.message.new_chat_members;
         let chat_id = ctx.chat.id;
-        if(members[0].id === require('./config/botkey.json').test_botID){
+        if(members[0].id === require('../config/botkey.json').test_botID){
             const request = {
                 chat_id: chat_id,
                 is_active: true,

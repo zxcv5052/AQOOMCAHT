@@ -1,5 +1,5 @@
 const Slack = require('slack-node');
-const webHookUri = require('./config/slack.json').webHookUrl;
+const webHookUri = require('../config/slack.json').webHookUrl;
 const slack = new Slack();
 slack.setWebhook(webHookUri);
 

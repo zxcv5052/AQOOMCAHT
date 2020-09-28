@@ -1,8 +1,8 @@
 const { sequelize } = require('./models');
 const { Telegraf } = require('telegraf');
-const chatRoom = require('./CreateChat.js')
-const user = require('./UserJoinLeft.js')
-const message = require('./Message.js')
+const chatRoom = require('./botAcitve/CreateChat.js')
+const user = require('./botAcitve/UserJoinLeft.js')
+const message = require('./botAcitve/Message.js')
 const bot = new Telegraf(require('./config/botkey.json').test_botKey);
 
 sequelize.sync();

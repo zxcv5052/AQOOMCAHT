@@ -1,7 +1,7 @@
-const User = require('./controllers/user.controller');
-const Chat =  require('./controllers/chat.controller');
-const UserChatPersonal =  require('./controllers/user_chat_personal');
-const Message = require('./controllers/message.controller')
+const User = require('../controllers/user.controller');
+const Chat =  require('../controllers/chat.controller');
+const UserChatPersonal =  require('../controllers/user_chat_personal');
+const Message = require('../controllers/message.controller')
 exports.chatAndUserCreate = async request =>{
     request["updatedAt"] = new Date();
 

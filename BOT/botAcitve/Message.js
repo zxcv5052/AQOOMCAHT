@@ -1,8 +1,9 @@
 const Common = require('./Common')
-const Chat = require('./controllers/chat.controller');
-const BlackListWord = require('./controllers/chat_blacklist.controller');
-const WhiteListUser = require('./controllers/user_chat_whitelist');
-const UserChatList = require('./controllers/user_chat_personal')
+const FAQ = require('./DefaultFAQ');
+const Chat = require('../controllers/chat.controller');
+const BlackListWord = require('../controllers/chat_blacklist.controller');
+const WhiteListUser = require('../controllers/user_chat_whitelist');
+const UserChatList = require('../controllers/user_chat_personal')
 exports.ListenText = bot =>{
     bot.on('text', async ctx =>{
         const chat_id = ctx.message.chat.id;
@@ -19,9 +20,13 @@ exports.ListenText = bot =>{
             message_id: ctx.message.message_id,
             message_type: ctx.message.reply_to_message ? "reply" : "text",
             message : ctx.message.text,
-            entity : ctx.message.entity,
             reply_to_message_id : ctx.message.reply_to_message_id
+        };
+        if(ctx.message.entities !== undefined){
+            request["entity"] = ctx.message.entities.toString();
         }
+        await FAQ.defaultFAQ(request, ctx.message, bot);
+
         // Check It is Moved Chat Room
         const chat = await Chat.findByChat(request);
         request["chat_id"] = chat.old_id !== null ? chat.old_id : chat_id;
@@ -30,7 +35,7 @@ exports.ListenText = bot =>{
         const whiteUser = await WhiteListUser.findByChatUser(request);
 
         await (async function (){
-            if(whiteUser === null){
+            if(whiteUser === null || chat.user_id !== user_id){
                 const blackWords = await BlackListWord.findByChatId(request);
                 if (blackWords.length !== 0) {
                     blackWords.some(
