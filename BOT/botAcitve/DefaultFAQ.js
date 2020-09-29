@@ -7,38 +7,51 @@
  *  - DB에 있는 내용으로 변하면 된다.
  */
 
-exports.defaultFAQ = async (request, message, bot) => {
+exports.customAndDefaultFAQ = (request, message, chatRules, originalChatId, bot) => {
+    let flag = false;
     if(request.status !== 'member'){
-        if(request.message.indexOf('!unban') === 0){
+        if(request.message.indexOf('!unban' && request.chat_type === 'supergroup') === 0){
+            flag = true;
             if(message.entities !== undefined){
                 message.entities.some(
-                    entity =>{
-                        if(entity.type==='text_mention')
-                            bot.telegram.unbanChatMember(request.chat_id, entity.user.id)
-                                .then(() =>{
-                                    bot.reply('Unban 수행 완료');
+                    async entity =>{
+                       if(entity.type === 'text_mention')
+                             bot.telegram.unbanChatMember(originalChatId, entity.user.id)
+                                .catch(err=>{
+                                    console.log(err);
                                 })
                     }
                 )
             }
         }
-        if(request.message.indexOf('!ban') === 0){
+        if(request.message.indexOf('!ban' && request.chat_type === 'supergroup') === 0){
+            flag = true;
             if(message.entities !== undefined) {
                 message.entities.some(
-                    entity => {
-                        if (entity.type === 'text_mention')
-                            bot.telegram.kickChatMember(request.chat_id, entity.user.id)
-                                .then(() => {
-                                    bot.reply('ban 수행 완료');
+                    async entity => {
+                        if(entity.type === 'text_mention')
+                            bot.telegram.kickChatMember(originalChatId, entity.user.id)
+                                .catch(err=>{
+                                    console.log(err);
+                                })
+                    }
+                )
+            }
+        }
+        if(request.message.indexOf('!kick' && request.chat_type === 'supergroup') === 0){
+            flag = true;
+            if(message.entities !== undefined) {
+                message.entities.some(
+                    async entity => {
+                        if(entity.type === 'text_mention')
+                            bot.telegram.kickChatMember(originalChatId, entity.user.id)
+                                .catch(err=>{
+                                    console.log(err);
                                 })
                     }
                 )
             }
         }
     }
-
-}
-
-exports.customFAQ = {
-
+    return flag;
 }

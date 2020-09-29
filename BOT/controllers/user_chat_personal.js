@@ -2,6 +2,7 @@ const db = require("../models");
 const sequelize = require('sequelize')
 const moment = require('moment');
 const User_Chat_Personal = db.User_Chat_Personal;
+const Extra = require('telegraf/extra')
 
 exports.updateOrCreate = (request) => {
     return new Promise((resolve, reject) => {
@@ -60,21 +61,17 @@ exports.findByIsAdmin = request =>{
     })
 }
 
-exports.updateToRestriction = (request,originChatId, bot) => {
+exports.updateToRestriction = (request,originChatId,chatRules, bot) => {
     return new Promise(async (resolve, reject) => {
-        const rule = await db.Chat.findByPk(request.chat_id);
         const model = await User_Chat_Personal.findOne({where: {chat_id: request.chat_id, user_id : request.user_id}});
         model.warning_pt += 1;
-        if(rule.restrict_limit <= model.warning_pt){
-            if(rule.restrict_type === 'ban'){
-                await bot.telegram.kickChatMember(originChatId, request.user_id);
+        if(chatRules.restrict_limit <= (model.warning_pt%chatRules.restrict_limit)){
+            const _until_date = moment().add(chatRules.restrict_time,'minutes').unix();
+            if(chatRules.restrict_type === 'ban'){
+                await bot.telegram.kickChatMember(originChatId, request.user_id, _until_date);
             }else{
-                await bot.telegram.restrictChatMember(originChatId, request.user_id, {
-                    until_date: 10
-                });
-                await function(){
-                    model.restriction_date = moment().unix() + 10
-                }();
+                await bot.telegram.restrictChatMember(originChatId, request.user_id, {permissions: 0, until_date: _until_date});
+                model.restriction_date = _until_date;
             }
         }
         await model.save().then(()=>{

@@ -6,11 +6,13 @@ exports.userJoinOrLeft = bot=> {
         const chat_id = ctx.chat.id;
         const user_id = member.id;
         const request = {
+            message_id: ctx.message.message_id,
             chat_id: chat_id,
             user_id: user_id,
             first_name: member.first_name,
             last_name: member.last_name,
             user_name: member.username,
+            message_type: ctx.message.from.is_bot ? 'kicked_chat' :'left_chat',
             is_active: false
         }
         if(member.id === require('../config/botkey.json').test_botID){
@@ -26,7 +28,8 @@ exports.userJoinOrLeft = bot=> {
         const chat = await Chat.findByChat(request);
         request["chat_id"] = chat.old_id !== null ? chat.old_id : chat_id;
 
-        await Common.checkAndCreateUser(request)
+        await Common.checkAndCreateUser(request);
+        await Common.saveMessage(request);
     });
 
     bot.on('new_chat_members', async ctx=>{
@@ -57,15 +60,18 @@ exports.userJoinOrLeft = bot=> {
         members.some(
             async member =>{
                 const request = {
+                    message_id: ctx.message.message_id,
                     user_id : member.id,
                     chat_id : chat_id,
                     first_name: member.first_name,
                     last_name: member.last_name,
                     user_name: member.username,
                     is_bot: member.is_bot,
+                    message_type: 'join_chat',
                     status: 'member'
                 }
                 await Common.checkAndCreateUser(request)
+                await Common.saveMessage(request);
             }
         );
     });
