@@ -60,7 +60,14 @@ exports.findByIsAdmin = request =>{
             })
     })
 }
-
+/**
+ * BlackListWord를 사용했을 때 사용이 된다.
+ * @param request
+ * @param originChatId
+ * @param chatRules
+ * @param bot
+ * @returns {Promise<unknown>}
+ */
 exports.updateToRestriction = (request,originChatId,chatRules, bot) => {
     return new Promise(async (resolve, reject) => {
         const model = await User_Chat_Personal.findOne({where: {chat_id: request.chat_id, user_id : request.user_id}});
@@ -74,11 +81,12 @@ exports.updateToRestriction = (request,originChatId,chatRules, bot) => {
                 model.restriction_date = _until_date;
             }
         }
-        await model.save().then(()=>{
-            resolve();
-        }).catch(err=>{
-            console.log(err)
-            reject();
-        })
+        await model.save()
+            .then(()=>{
+                resolve();
+            }).catch(err=>{
+                console.log(err)
+                reject();
+            })
     })
 }

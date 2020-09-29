@@ -39,7 +39,7 @@ exports.ListenText = bot =>{
         await async function (){
             if(ctx.message.text.indexOf('!') === 0){
                 request['chat_type'] = ctx.chat.type;
-                const isFAQ = await FAQ.customAndDefaultFAQ(request, ctx.message, chatRules, originalChatId, bot);
+                const isFAQ = await FAQ.customAndDefaultFAQ(request, ctx, chatRules, originalChatId, bot);
                 if(isFAQ) request['message_type'] = 'call_faq';;
             }
         }();
