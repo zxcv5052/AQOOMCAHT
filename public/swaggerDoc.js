@@ -291,6 +291,9 @@ const options = {
                         user_id:{
                             type: 'integer'
                         },
+                        media_group_id:{
+                            type: 'integer'
+                        },
                         message_type:{
                             type: 'string'
                         },

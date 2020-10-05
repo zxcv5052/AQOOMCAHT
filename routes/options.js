@@ -547,9 +547,8 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
         button: req.body.button,
         chat_id: req.body.chat_id
     }
-    if(request.response_content_text.trim() !== '' || request.response_content_text !== undefined){
-        request["request_content_text"] = '!'+request.response_content_text;
-    }
+    request["request_content_text"] = '!'+request.request_content_text;
+    console.log(req.file);
     uploading(req.file)
         .then(result=>{
         if(result!==undefined) {
@@ -560,6 +559,7 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
                 res.status(200).send("ok")
             })
             .catch(err=>{
+                console.log(err);
                 res.status(500).send(err);
             })
     }).catch(()=>{
@@ -623,6 +623,8 @@ router.put('/faq', (req,res)=>{
         button: req.body.button,
         is_active: req.body.is_active
     };
+    console.log("hihihii")
+    console.log(req.file)
     uploading(req.file)
         .then(result=>{
             if(result!==undefined) {
@@ -635,9 +637,10 @@ router.put('/faq', (req,res)=>{
                 })
                 .catch(err=>{
                     res.status(500).send(err);
+                    console.log(err);
                 })
-        }).catch(()=>{
-
+        }).catch((err)=>{
+            console.log(err);
     });
 });
 
@@ -697,7 +700,7 @@ function uploading(requestFile){
             resumable: false
         });
         blobStream.on('error', err => {
-            reject();
+            reject(err);
         });
         blobStream.on('finish', () => {
             // The public URL can be used to directly access the file via HTTP.

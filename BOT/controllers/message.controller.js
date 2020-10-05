@@ -90,3 +90,20 @@ exports.sendReply = request => {
        else reject();
     });
 }
+exports.findByMessageID = request => {
+    return new Promise(async (resolve, reject) => {
+        Message.findAll({
+            where: {
+                message_id: request.message_id,
+                chat_id: request.chat_id,
+                user_id: request.user_id
+            }
+        })
+            .then(result=>{
+                resolve(result);
+            })
+            .catch(err=>{
+                reject(err);
+            })
+    });
+};

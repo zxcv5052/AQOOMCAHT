@@ -46,7 +46,6 @@ exports.findByChat = request => {
     return new Promise(async (resolve, reject) => {
         Chat.findByPk(request.chat_id)
             .then((result)=>{
-                console.log(result)
                 resolve(result);
             })
             .catch((err)=>{
@@ -125,4 +124,4 @@ exports.delete = request => {
                 reject(err)
             });
     });
-}
+};

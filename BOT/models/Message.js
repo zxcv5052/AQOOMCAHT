@@ -12,6 +12,9 @@ module.exports = (sequelize, Sequelize) => {
             primaryKey: true,
             type: Sequelize.BIGINT(20)
         },
+        media_group_id:{
+            type: Sequelize.BIGINT(20)
+        },
         message_type:{
             type: Sequelize.STRING(50)
         },

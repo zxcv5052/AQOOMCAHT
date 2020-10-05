@@ -40,16 +40,30 @@ bot.on('new_chat_members', async ctx => {
 });
 //</editor-fold>
 
+
+//<editor-fold desc="Not Private Send Message">
 bot.on('sticker', async ctx =>{
     if(ctx.chat.type !== 'private') await message.ListenSticker(bot, ctx);
 });
 
 bot.on('animation', async ctx=> {
-    console.log(ctx.message)
+    if(ctx.chat.type !== 'private') console.log(ctx.message)
 });
 
 bot.on('text', async ctx =>{
     if(ctx.chat.type !== 'private') await message.ListenText(bot, ctx);
 });
+// photo as photo
+bot.on('photo', async ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenPhoto(bot,ctx);
+});
+// photo as file
+bot.on('document' , async  ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenDocument(bot,ctx);
+})
+bot.on('video', async ctx=>{
+    console.log(ctx.message);
+})
+//</editor-fold>
 
 bot.launch();

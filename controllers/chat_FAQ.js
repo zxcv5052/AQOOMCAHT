@@ -13,7 +13,7 @@ exports.create = request=>{
                 resolve(result);
             })
             .catch(err=>{
-                reject();
+                reject(err);
             })
     });
 }

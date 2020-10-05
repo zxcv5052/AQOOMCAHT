@@ -9,7 +9,7 @@ const source = CancelToken.source();
 
 exports.create = (request) => {
     return new Promise(async (resolve, reject) => {
-        Message.create(message)
+        Message.create(request)
             .then(()=>{
                 resolve();
             })
