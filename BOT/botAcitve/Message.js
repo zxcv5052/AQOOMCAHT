@@ -4,9 +4,7 @@ const Chat = require('../controllers/chat.controller');
 const BlackListWord = require('../controllers/chat_blacklist.controller');
 const WhiteListUser = require('../controllers/user_chat_whitelist');
 const UserChatList = require('../controllers/user_chat_personal')
-exports.ListenText = bot =>{
-    bot.on('text', async ctx =>{
-
+exports.ListenText = async (bot,ctx) =>{
         //<editor-fold desc="Properties">
         const originalChatId = ctx.message.chat.id;
         const user_id = ctx.message.from.id;
@@ -20,9 +18,10 @@ exports.ListenText = bot =>{
             language_code: ctx.message.from.language_code,
             status : chatMember.status==='restricted' ? "member" : chatMember.status,
             message_id: ctx.message.message_id,
-            message_type: ctx.message.reply_to_message ? "reply" : "text",
+            message_type: ctx.message.reply_to_message ? "reply_to_text" : "text",
             message : ctx.message.text,
             reply_to_message_id : ctx.message.reply_to_message_id,
+            type: ctx.chat.type
         };
 
         if(ctx.message.entities !== undefined){
@@ -45,10 +44,10 @@ exports.ListenText = bot =>{
         }();
         //</editor-fold>
 
+        await Common.chatAndUserCreate(request);    // 꼭 필요 한가? ( Chat 은 오바 인가? )
 
         //<editor-fold desc="Check Rules <Black Word & White User>">
         if(chatMember.status !== 'creator'){
-            await Common.chatAndUserCreate(request);
             const whiteUser = await WhiteListUser.findByChatUser(request);
 
             await (async function () {
@@ -61,8 +60,8 @@ exports.ListenText = bot =>{
                                     request.message_type = 'bot_delete';
                                     bot.telegram.deleteMessage(originalChatId, request.message_id)
                                         .then(async () => {
-                                            await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
                                             ctx.reply("금지어 사용");
+                                            await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
                                         })
                                         .catch((err) => {
                                             console.log(err);
@@ -77,5 +76,32 @@ exports.ListenText = bot =>{
         //</editor-fold>
 
         await Common.saveMessage(request);
-    });
 }
+
+exports.ListenSticker = async (bot,ctx) =>{
+    const originalChatId = ctx.message.chat.id;
+    const user_id = ctx.message.from.id;
+    const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+    const request = {
+        user_id : user_id,
+        chat_id : originalChatId,
+        message_id: ctx.message.message_id,
+        message_type: ctx.message.reply_to_message ? "reply_to_sticker" : "text",
+        message: ctx.message.sticker.emoji.toString(),
+        first_name: ctx.message.from.first_name,
+        last_name: ctx.message.from.last_name,
+        user_name: ctx.message.from.username,
+        language_code: ctx.message.from.language_code,
+        status : chatMember.status==='restricted' ? "member" : chatMember.status,
+        reply_to_message_id : ctx.message.reply_to_message_id,
+        type: ctx.chat.type
+    };
+    await Common.chatAndUserCreate(request);
+
+    await Common.saveMessage(request);
+};
+exports.ListenMedia = async (bot, ctx) =>{
+    const request = {
+
+    }
+};

@@ -72,7 +72,7 @@ exports.updateToRestriction = (request,originChatId,chatRules, bot) => {
     return new Promise(async (resolve, reject) => {
         const model = await User_Chat_Personal.findOne({where: {chat_id: request.chat_id, user_id : request.user_id}});
         model.warning_pt += 1;
-        if(chatRules.restrict_limit <= (model.warning_pt%chatRules.restrict_limit)){
+        if(0 === (model.warning_pt%chatRules.restrict_limit)){
             const _until_date = moment().add(chatRules.restrict_time,'minutes').unix();
             if(chatRules.restrict_type === 'ban'){
                 await bot.telegram.kickChatMember(originChatId, request.user_id, _until_date);

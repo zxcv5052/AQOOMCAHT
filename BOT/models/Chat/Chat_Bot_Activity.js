@@ -9,6 +9,8 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING(10)
         }
     },{
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_520_ci',
         timestamps: true,
         freezeTableName: true
     });

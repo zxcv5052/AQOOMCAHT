@@ -28,7 +28,7 @@ exports.customAndDefaultFAQ = async (request, ctx, chatRules, originalChatId, bo
     if(request.status !== 'member'){
         const _until_date = moment().add(chatRules.restrict_time,'minutes').unix();
 
-        if(request.message.indexOf('!unban' && request.chat_type === 'supergroup') === 0){
+        if(request.message.indexOf('!unban')===0 && request.chat_type === 'supergroup'){
             flag = true;
             if(ctx.message.entities !== undefined){
                 ctx.message.entities.some(
@@ -43,7 +43,9 @@ exports.customAndDefaultFAQ = async (request, ctx, chatRules, originalChatId, bo
             }
             return flag;
         }
-        if(request.message.indexOf('!ban' && request.chat_type === 'supergroup') === 0){
+        if(request.message.indexOf('!ban') === 0 && request.chat_type === 'supergroup'){
+            console.log("hihi");
+
             flag = true;
             if(ctx.message.entities !== undefined) {
                 ctx.message.entities.some(
@@ -58,7 +60,7 @@ exports.customAndDefaultFAQ = async (request, ctx, chatRules, originalChatId, bo
             }
             return flag;
         }
-        if(request.message.indexOf('!kick' && request.chat_type === 'supergroup') === 0){
+        if(request.message.indexOf('!kick')===0 && request.chat_type === 'supergroup'){
             flag = true;
             if(ctx.message.entities !== undefined) {
                 ctx.message.entities.some(

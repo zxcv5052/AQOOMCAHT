@@ -19,6 +19,8 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: true
         }
     },{
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_520_ci',
         timestamps: true,
         freezeTableName: true
     });
