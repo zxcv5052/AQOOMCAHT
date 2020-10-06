@@ -25,7 +25,7 @@ exports.ListenText = async (bot,ctx) =>{
 
     // FAQ Function
     await async function (){
-        if(ctx.message.text.indexOf('!') === 0){
+        if(ctx.message.text.indexOf('!') === 0 && (chatMember.status === 'creator' || chatMember.status === 'administer')){
             request['chat_type'] = ctx.chat.type;
             const isFAQ = await FAQ.customAndDefaultFAQ(request, ctx, chatRules, originalChatId, bot);
             if(isFAQ) request['message_type'] = 'call_faq';
@@ -44,13 +44,16 @@ exports.ListenSticker = async (bot,ctx) =>{
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_sticker" : "sticker";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_sticker";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -64,17 +67,20 @@ exports.ListenPhoto = async (bot, ctx) =>{
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_photo" : "photo";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_photo";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
 
         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e);
@@ -88,15 +94,18 @@ exports.ListenDocument = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_document" : "document";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_document";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e);
@@ -110,17 +119,19 @@ exports.ListenVideo = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_video";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
-
         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -156,12 +167,15 @@ exports.ListenVoice = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_voice" : "voice";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_voice";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -174,12 +188,15 @@ exports.ListenLocation = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_location" : "location";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_location";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -192,12 +209,15 @@ exports.ListenAnimation = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_animation" : "animation";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_animation";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -210,14 +230,17 @@ exports.ListenAudio = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember);
+        let request = await makeRequest(ctx, getFileID, chatMember);
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_audio" : "audio";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_audio";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         request['entity'] = ctx.audio.title;
 
         await Common.chatAndUserCreate(request);
-
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
         await Common.saveMessage(request);
     }catch (e) {
         console.log(e)
@@ -268,7 +291,7 @@ async function checkRestriction(request, ctx, originalChatId, chatRules , bot) {
                 })
             return request;
         }
-        if(request.message_type === 'text' || request.message_type === 'reply_text' || request.message_type === 'forward_text'){
+        if(request.message_type === 'text' || request.message_type === 'reply_to_text' || request.message_type === 'forward_text'){
             // Black List word Process
             const blackWords = await BlackListWord.findByChatId(request);
             if (blackWords.length !== 0) {

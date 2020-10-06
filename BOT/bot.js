@@ -9,7 +9,6 @@ sequelize.sync();
 // const slackCommand = require('./slack');
 // slackCommand.slackSend("test");
 
-
 //<editor-fold desc="Chat Listener">
 bot.on('migrate_from_chat_id', async ctx=> {
     await chatRoom.ListenMigrateFromChat(bot, ctx);
@@ -58,12 +57,15 @@ bot.on('video', async ctx=>{
 });
 bot.on('video_note', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenVideoNote(bot,ctx);
-})
+});
 bot.on('location', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenLocation(bot,ctx);
-})
+});
 bot.on('voice', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenVoice(bot,ctx);
+});
+bot.on('audio', async ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenAudio(bot,ctx);
 });
 // 구현 미완성.
 bot.on('invoice', async ctx=>{
@@ -72,10 +74,8 @@ bot.on('invoice', async ctx=>{
 });
 // 구현 미완성.
 bot.on('successful_payment', async ctx=>{
+    console.log('successful_payment');
     console.log(ctx.message);
-});
-bot.on('audio', async ctx=>{
-    if(ctx.chat.type !== 'private') await message.ListenAudio(bot,ctx);
 });
 //</editor-fold>
 
