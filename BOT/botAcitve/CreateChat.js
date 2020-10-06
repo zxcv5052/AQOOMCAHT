@@ -17,7 +17,6 @@ exports.ListenMigrateFromChat = (bot,ctx)=> {
         chat_id: ctx.chat.id,
         type: ctx.chat.type,
         group_name: ctx.chat.title,
-        user_id: ctx.from.id,
         old_id: ctx.message.migrate_from_chat_id
     }
     Chat.create(request)

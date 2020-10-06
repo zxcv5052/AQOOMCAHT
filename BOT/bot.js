@@ -12,11 +12,9 @@ sequelize.sync();
 
 //<editor-fold desc="Chat Listener">
 bot.on('migrate_from_chat_id', async ctx=> {
-    console.log(ctx.message);
     await chatRoom.ListenMigrateFromChat(bot, ctx);
 })
 bot.on('migrate_to_chat_id', async ctx=> {
-    console.log(ctx.message);
     await chatRoom.ListenMigrateToChat(bot, ctx);
 })
 bot.on('channel_chat_created', async ctx =>{
@@ -47,7 +45,7 @@ bot.on('sticker', async ctx =>{
 });
 
 bot.on('animation', async ctx=> {
-    if(ctx.chat.type !== 'private') console.log(ctx.message)
+    console.log(ctx.message)
 });
 
 bot.on('text', async ctx =>{
