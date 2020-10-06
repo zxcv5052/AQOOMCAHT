@@ -71,10 +71,6 @@ const options = {
                         restrict_date:{
                             type: 'string'
                         },
-                        anti_image:{
-                            type: 'boolean',
-                            defaultValue: false
-                        },
                         anti_url:{
                             type: 'boolean',
                             defaultValue: false

@@ -33,9 +33,7 @@ exports.ListenText = async (bot,ctx) =>{
     }();
 
     await Common.chatAndUserCreate(request);
-
     request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
-
     await Common.saveMessage(request);
 }
 
@@ -47,15 +45,11 @@ exports.ListenSticker = async (bot,ctx) =>{
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
         const request = await makeRequest(ctx, getFileID, chatMember);
-        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_sticker" : "sticker";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_sticker";
-        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
-
-
 
         await Common.saveMessage(request);
     }catch (e) {
@@ -73,6 +67,7 @@ exports.ListenPhoto = async (bot, ctx) =>{
         const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_photo" : "photo";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_photo";
 
         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
 
@@ -96,6 +91,7 @@ exports.ListenDocument = async (bot, ctx) => {
         const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_document" : "document";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_document";
 
         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
 

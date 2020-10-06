@@ -30,10 +30,6 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
         },
-        anti_image:{
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
         anti_url:{
             type: Sequelize.BOOLEAN,
             defaultValue: false
