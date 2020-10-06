@@ -17,6 +17,7 @@ exports.ListenText = async (bot,ctx) =>{
 
     request['message_type'] = ctx.message.reply_to_message ? "reply_to_text" : "text";
     request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_text";
+    request['is_forward'] = ctx.message.forward_from !== undefined;
 
     if(ctx.message.entities !== undefined) request["entity"] = JSON.stringify(ctx.message.entities);
 
@@ -33,9 +34,8 @@ exports.ListenText = async (bot,ctx) =>{
 
     await Common.chatAndUserCreate(request);
 
-    if(chatMember.status !== 'creator'){
-        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
-    }
+    request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
+
     await Common.saveMessage(request);
 }
 
@@ -51,6 +51,7 @@ exports.ListenSticker = async (bot,ctx) =>{
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_sticker" : "sticker";
         request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_sticker";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
         await Common.chatAndUserCreate(request);
 
@@ -257,39 +258,59 @@ async function makeRequest(ctx, messageValue, chatMember){
 async function checkRestriction(request, ctx, originalChatId, chatRules , bot) {
     const whiteUser = await WhiteListUser.findByChatUser(request);
     if (whiteUser === null) {
-    // Forward Checking
-    if(chatRules.anti_forward && request.message_type === 'forward_text') {
-        request.message_type = 'bot_delete';
-        await bot.telegram.deleteMessage(originalChatId, request.message_id)
-            .then(async () => {
-                ctx.reply("Forward 사용");
-                await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-        return request;
-    }
-    // Black List word Process
-    const blackWords = await BlackListWord.findByChatId(request);
-    if (blackWords.length !== 0) {
-        await blackWords.some(
-            blackWord => {
-                if (request.message.includes(blackWord.word)) {
-                    request.message_type = 'bot_delete';
-                    bot.telegram.deleteMessage(originalChatId, request.message_id)
-                        .then(async () => {
-                            ctx.reply("금지어 사용");
-                            if(chatRules.restrict_type !== 'none')
-                                await UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
-                        })
-                        .catch((err) => {
-                            console.log(err);
-                        })
-                    return request;
-                }
-            });
-    }
+        // Forward Checking
+        if(chatRules.anti_forward && request.is_forward) {
+            request.message_type = 'bot_delete';
+            await bot.telegram.deleteMessage(originalChatId, request.message_id)
+                .then(async () => {
+                    ctx.reply("Forward 사용");
+                    if(request.status === 'member' && chatRules.restrict_type !== 'none')
+                        await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+            return request;
+        }
+        if(request.message_type === 'text' || request.message_type === 'reply_text' || request.message_type === 'forward_text'){
+            // Black List word Process
+            const blackWords = await BlackListWord.findByChatId(request);
+            if (blackWords.length !== 0) {
+                await blackWords.some(
+                    blackWord => {
+                        if (request.message.includes(blackWord.word)) {
+                            request.message_type = 'bot_delete';
+                            bot.telegram.deleteMessage(originalChatId, request.message_id)
+                                .then(() => {
+                                    ctx.reply("금지어 사용");
+                                    if(request.status === 'member' && chatRules.restrict_type !== 'none')
+                                        UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                })
+                            return request;
+                        }
+                    });
+            }
+            // anti_url
+            if(request.anti_url){
+                ctx.message.entities.some(
+                    entity =>{
+                        if(entity.type === 'url'){
+                            request.message_type = 'bot_delete';
+                            bot.telegram.deleteMessage(originalChatId, request.message_id)
+                                .then(()=>{
+                                    ctx.reply("URL 사용");
+                                    if(request.status === 'member' && chatRules.restrict_type !== 'none')
+                                        UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
+                                })
+                            return request;
+                        }
+                    }
+                )
+            }
+        }
     }
     return request;
 }
