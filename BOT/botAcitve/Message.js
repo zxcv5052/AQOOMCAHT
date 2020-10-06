@@ -90,7 +90,7 @@ exports.ListenPhoto = async (bot, ctx) =>{
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember, 'photo');
+        const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_photo" : "photo";
 
@@ -113,7 +113,7 @@ exports.ListenDocument = async (bot, ctx) => {
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember, 'document');
+        const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_document" : "document";
 
@@ -129,14 +129,18 @@ exports.ListenDocument = async (bot, ctx) => {
 
 exports.ListenVideo = async (bot, ctx) => {
     try{
-        const getFileID = ctx.message.animation.file_id;
+        const getFileID = ctx.message.video.file_id;
         const originalChatId = ctx.message.chat.id;
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-        const request = await makeRequest(ctx, getFileID, chatMember, 'video');
+        const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
+
+        if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
+
+        if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
 
         await Common.chatAndUserCreate(request);
 
@@ -145,7 +149,102 @@ exports.ListenVideo = async (bot, ctx) => {
         console.log(e)
     }
 }
+// exports.ListenVideoNote = async (bot, ctx) => {
+//     try{
+//         const getFileID = ctx.message.video.file_id;
+//         const originalChatId = ctx.message.chat.id;
+//         const user_id = ctx.message.from.id;
+//         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+//
+//         const request = await makeRequest(ctx, getFileID, chatMember);
+//
+//         request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
+//
+//         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
+//
+//         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
+//
+//         await Common.chatAndUserCreate(request);
+//
+//         await Common.saveMessage(request);
+//     }catch (e) {
+//         console.log(e)
+//     }
+// }
+exports.ListenVoice = async (bot, ctx) => {
+    try{
+        const getFileID = ctx.message.voice.file_id;
+        const originalChatId = ctx.message.chat.id;
+        const user_id = ctx.message.from.id;
+        const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
+        const request = await makeRequest(ctx, getFileID, chatMember);
+
+        request['message_type'] = ctx.message.reply_to_message ? "reply_to_voice" : "voice";
+
+        await Common.chatAndUserCreate(request);
+
+        await Common.saveMessage(request);
+    }catch (e) {
+        console.log(e)
+    }
+}
+exports.ListenLocation = async (bot, ctx) => {
+    try{
+        const getFileID = JSON.stringify(ctx.message.location);
+        const originalChatId = ctx.message.chat.id;
+        const user_id = ctx.message.from.id;
+        const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+
+        const request = await makeRequest(ctx, getFileID, chatMember);
+
+        request['message_type'] = ctx.message.reply_to_message ? "reply_to_location" : "location";
+
+        await Common.chatAndUserCreate(request);
+
+        await Common.saveMessage(request);
+    }catch (e) {
+        console.log(e)
+    }
+}
+exports.ListenAnimation = async (bot, ctx) => {
+    try{
+        const getFileID = ctx.message.animation.file_id;
+        const originalChatId = ctx.message.chat.id;
+        const user_id = ctx.message.from.id;
+        const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+
+        const request = await makeRequest(ctx, getFileID, chatMember);
+
+        request['message_type'] = ctx.message.reply_to_message ? "reply_to_animation" : "animation";
+
+        await Common.chatAndUserCreate(request);
+
+        await Common.saveMessage(request);
+    }catch (e) {
+        console.log(e)
+    }
+}
+exports.ListenAudio = async (bot, ctx) => {
+    try{
+        const getFileID = ctx.message.audio.file_id;
+        const originalChatId = ctx.message.chat.id;
+        const user_id = ctx.message.from.id;
+        const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+
+        const request = await makeRequest(ctx, getFileID, chatMember);
+
+        request['message_type'] = ctx.message.reply_to_message ? "reply_to_audio" : "audio";
+
+        request['entity'] = ctx.audio.title;
+
+        await Common.chatAndUserCreate(request);
+
+        await Common.saveMessage(request);
+    }catch (e) {
+        console.log(e)
+    }
+}
 async function makeRequest(ctx, messageValue, chatMember){
     try{
         // getFileID => ctx.message.document.thumb.file_id ? 둘 중에 하나 선택 해야됨.

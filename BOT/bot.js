@@ -28,7 +28,6 @@ bot.on('supergroup_chat_created', async ctx =>{
 })
 //</editor-fold>
 
-
 //<editor-fold desc="User Join & Left Listener">
 bot.on('left_chat_member', async ctx => {
     if(ctx.chat.type !== 'private') await user.ListenUserLeftChat(bot,ctx)
@@ -43,25 +42,43 @@ bot.on('new_chat_members', async ctx => {
 bot.on('sticker', async ctx =>{
     if(ctx.chat.type !== 'private') await message.ListenSticker(bot, ctx);
 });
-
 bot.on('animation', async ctx=> {
-    console.log(ctx.message)
+    if(ctx.chat.type !== 'private') await message.ListenAnimation(bot, ctx);
 });
-
 bot.on('text', async ctx =>{
     if(ctx.chat.type !== 'private') await message.ListenText(bot, ctx);
 });
-// photo as photo
 bot.on('photo', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenPhoto(bot,ctx);
 });
-// photo as file
 bot.on('document' , async  ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenDocument(bot,ctx);
-})
+});
 bot.on('video', async ctx=>{
-    console.log(ctx.message);
+    if(ctx.chat.type !== 'private') await message.ListenVideo(bot,ctx);
+});
+bot.on('video_note', async ctx=>{
+    console.log(ctx.message)
+    // if(ctx.chat.type !== 'private') await message.ListenVideoNote(bot,ctx);
 })
+bot.on('location', async ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenLocation(bot,ctx);
+})
+bot.on('voice', async ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenVoice(bot,ctx);
+});
+// 구현 미완성.
+bot.on('invoice', async ctx=>{
+    console.log('in voice');
+    console.log(ctx.message);
+});
+// 구현 미완성.
+bot.on('successful_payment', async ctx=>{
+    console.log(ctx.message);
+});
+bot.on('audio', async ctx=>{
+    if(ctx.chat.type !== 'private') await message.ListenAudio(bot,ctx);
+});
 //</editor-fold>
 
 bot.launch();
