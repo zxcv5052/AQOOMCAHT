@@ -6,21 +6,23 @@ const BlackListWord = require('../controllers/chat_blacklist.controller');
 const WhiteListUser = require('../controllers/user_chat_whitelist');
 const UserChatList = require('../controllers/user_chat_personal');
 
+// URL & Forward && <Command?>
 exports.ListenText = async (bot,ctx) =>{
     const messageText = ctx.message.text;
-
     const originalChatId = ctx.message.chat.id;
     const user_id = ctx.message.from.id;
     const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-    const request = await makeRequest(ctx, messageText, chatMember);
+    let request = await makeRequest(ctx, messageText, chatMember);
 
     request['message_type'] = ctx.message.reply_to_message ? "reply_to_text" : "text";
+    request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_text";
 
     if(ctx.message.entities !== undefined) request["entity"] = JSON.stringify(ctx.message.entities);
 
     const chatRules = await Chat.findByChat(request);
 
+    // FAQ Function
     await async function (){
         if(ctx.message.text.indexOf('!') === 0){
             request['chat_type'] = ctx.chat.type;
@@ -29,53 +31,30 @@ exports.ListenText = async (bot,ctx) =>{
         }
     }();
 
-    await Common.chatAndUserCreate(request);    // 꼭 필요 한가? ( Chat 은 오바 인가? )
+    await Common.chatAndUserCreate(request);
 
-    //<editor-fold desc="Check Rules <Black Word & White User>">
     if(chatMember.status !== 'creator'){
-        const whiteUser = await WhiteListUser.findByChatUser(request);
-
-        await (async function () {
-            if (whiteUser === null) {
-                const blackWords = await BlackListWord.findByChatId(request);
-                if (blackWords.length !== 0) {
-                    blackWords.some(
-                        blackWord => {
-                            if (request.message.includes(blackWord.word)) {
-                                request.message_type = 'bot_delete';
-                                bot.telegram.deleteMessage(originalChatId, request.message_id)
-                                    .then(async () => {
-                                        ctx.reply("금지어 사용");
-                                        await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
-                                    })
-                                    .catch((err) => {
-                                        console.log(err);
-                                    })
-                                return true;
-                            }
-                        });
-                }
-            }
-        })();
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
     }
-        //</editor-fold>
-
-        await Common.saveMessage(request);
+    await Common.saveMessage(request);
 }
 
 exports.ListenSticker = async (bot,ctx) =>{
     try {
         const getFileID = ctx.message.sticker.file_id;
-
         const originalChatId = ctx.message.chat.id;
         const user_id = ctx.message.from.id;
         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
         const request = await makeRequest(ctx, getFileID, chatMember);
+        const chatRules = await Chat.findByChat(request);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_sticker" : "sticker";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_sticker";
 
         await Common.chatAndUserCreate(request);
+
+
 
         await Common.saveMessage(request);
     }catch (e) {
@@ -137,6 +116,7 @@ exports.ListenVideo = async (bot, ctx) => {
         const request = await makeRequest(ctx, getFileID, chatMember);
 
         request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_video";
 
         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
 
@@ -149,28 +129,29 @@ exports.ListenVideo = async (bot, ctx) => {
         console.log(e)
     }
 }
-// exports.ListenVideoNote = async (bot, ctx) => {
-//     try{
-//         const getFileID = ctx.message.video.file_id;
-//         const originalChatId = ctx.message.chat.id;
-//         const user_id = ctx.message.from.id;
-//         const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
-//
-//         const request = await makeRequest(ctx, getFileID, chatMember);
-//
-//         request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
-//
-//         if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
-//
-//         if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
-//
-//         await Common.chatAndUserCreate(request);
-//
-//         await Common.saveMessage(request);
-//     }catch (e) {
-//         console.log(e)
-//     }
-// }
+exports.ListenVideoNote = async (bot, ctx) => {
+    console.log(ctx.message);
+    try{
+        // const getFileID = ctx.message.video.file_id;
+        // const originalChatId = ctx.message.chat.id;
+        // const user_id = ctx.message.from.id;
+        // const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+        //
+        // const request = await makeRequest(ctx, getFileID, chatMember);
+        //
+        // request['message_type'] = ctx.message.reply_to_message ? "reply_to_video" : "video";
+        //
+        // if(ctx.message.media_group_id !== undefined) request['media_group_id'] = ctx.message.media_group_id;
+        //
+        // if(ctx.message.caption !== undefined) request['entity'] = ctx.message.caption;
+        //
+        // await Common.chatAndUserCreate(request);
+        //
+        // await Common.saveMessage(request);
+    }catch (e) {
+        console.log(e)
+    }
+}
 exports.ListenVoice = async (bot, ctx) => {
     try{
         const getFileID = ctx.message.voice.file_id;
@@ -247,8 +228,6 @@ exports.ListenAudio = async (bot, ctx) => {
 }
 async function makeRequest(ctx, messageValue, chatMember){
     try{
-        // getFileID => ctx.message.document.thumb.file_id ? 둘 중에 하나 선택 해야됨.
-
         const originalChatId = ctx.message.chat.id;
         const user_id = ctx.message.from.id;
 
@@ -266,7 +245,6 @@ async function makeRequest(ctx, messageValue, chatMember){
             status : chatMember.status==='restricted' ? "member" : chatMember.status,
             type: ctx.chat.type
         }
-
         // Check It is Moved Chat Room
         const thisChat = await Chat.findByChat(request);
         request["chat_id"] = thisChat.old_id !== null ? thisChat.old_id : originalChatId;
@@ -275,4 +253,43 @@ async function makeRequest(ctx, messageValue, chatMember){
     }catch (e) {
         console.log(e);
     }
+}
+async function checkRestriction(request, ctx, originalChatId, chatRules , bot) {
+    const whiteUser = await WhiteListUser.findByChatUser(request);
+    if (whiteUser === null) {
+    // Forward Checking
+    if(chatRules.anti_forward && request.message_type === 'forward_text') {
+        request.message_type = 'bot_delete';
+        await bot.telegram.deleteMessage(originalChatId, request.message_id)
+            .then(async () => {
+                ctx.reply("Forward 사용");
+                await UserChatList.updateToRestriction(request, originalChatId,chatRules, bot);
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        return request;
+    }
+    // Black List word Process
+    const blackWords = await BlackListWord.findByChatId(request);
+    if (blackWords.length !== 0) {
+        await blackWords.some(
+            blackWord => {
+                if (request.message.includes(blackWord.word)) {
+                    request.message_type = 'bot_delete';
+                    bot.telegram.deleteMessage(originalChatId, request.message_id)
+                        .then(async () => {
+                            ctx.reply("금지어 사용");
+                            if(chatRules.restrict_type !== 'none')
+                                await UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
+                    return request;
+                }
+            });
+    }
+    }
+    return request;
 }

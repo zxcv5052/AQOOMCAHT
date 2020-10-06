@@ -21,9 +21,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         restrict_type:{
             type: Sequelize.ENUM({
-                values: [ 'ban','restrict' ]
+                values: ['none', 'ban','restrict' ]
             }),
-            defaultValue: 'restrict'
+            defaultValue: 'none'
         },
         restrict_limit:{
             type: Sequelize.INTEGER(10),

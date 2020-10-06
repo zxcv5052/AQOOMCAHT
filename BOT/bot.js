@@ -37,7 +37,6 @@ bot.on('new_chat_members', async ctx => {
 });
 //</editor-fold>
 
-
 //<editor-fold desc="Not Private Send Message">
 bot.on('sticker', async ctx =>{
     if(ctx.chat.type !== 'private') await message.ListenSticker(bot, ctx);
@@ -58,8 +57,7 @@ bot.on('video', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenVideo(bot,ctx);
 });
 bot.on('video_note', async ctx=>{
-    console.log(ctx.message)
-    // if(ctx.chat.type !== 'private') await message.ListenVideoNote(bot,ctx);
+    if(ctx.chat.type !== 'private') await message.ListenVideoNote(bot,ctx);
 })
 bot.on('location', async ctx=>{
     if(ctx.chat.type !== 'private') await message.ListenLocation(bot,ctx);
