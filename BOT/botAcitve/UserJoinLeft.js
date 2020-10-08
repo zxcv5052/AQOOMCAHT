@@ -15,7 +15,6 @@ exports.ListenUserLeftChat = async (bot,ctx)=> {
         is_active: false
     }
     if (member.id === require('../config/botkey.json').test_botID) {
-        await Chat.updateOrCreate(request);
         request['status'] = 'kicked';
         request['is_bot'] = true;
     } else {

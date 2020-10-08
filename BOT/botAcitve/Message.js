@@ -295,22 +295,22 @@ async function checkRestriction(request, ctx, originalChatId, chatRules , bot) {
             // Black List word Process
             const blackWords = await BlackListWord.findByChatId(request);
             if (blackWords.length !== 0) {
-                await blackWords.some(
+                const isBlackMessage = await blackWords.some(
                     blackWord => {
-                        if (request.message.includes(blackWord.word)) {
-                            request.message_type = 'bot_delete';
-                            bot.telegram.deleteMessage(originalChatId, request.message_id)
-                                .then(() => {
-                                    ctx.reply("금지어 사용");
-                                    if(request.status === 'member' && chatRules.restrict_type !== 'none')
-                                        UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                })
-                            return request;
-                        }
+                        return request.message.includes(blackWord.word);
                     });
+                if(isBlackMessage){
+                    request.message_type = 'bot_delete';
+                    bot.telegram.deleteMessage(originalChatId, request.message_id)
+                        .then(() => {
+                            ctx.reply("금지어 사용");
+                            if(request.status === 'member' && chatRules.restrict_type !== 'none')
+                                UserChatList.updateToRestriction(request, originalChatId, chatRules, bot);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
+                }
             }
             // anti_url
             if(request.anti_url){
