@@ -1,5 +1,4 @@
-const db = require("../models");
-const Chat = db.Chat;
+const { Chat } = require("../models");
 
 exports.createOrUpdate =(request) => {
     return new Promise(async (resolve, reject) => {

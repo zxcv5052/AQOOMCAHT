@@ -1,5 +1,4 @@
-const db = require("../models");
-const Chat_greeting = db.Chat_greeting;
+const { Chat_greeting } = require("../models");
 
 // Create and Save a new Greeting
 exports.create = (request) => {

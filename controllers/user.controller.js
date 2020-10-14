@@ -1,5 +1,4 @@
-const db = require("../models");
-const User = db.User;
+const { User } = require("../models");
 
 /**
  * @param request ( user_id, first_name, last_name, user_name ) if already exists add ( updateAt )

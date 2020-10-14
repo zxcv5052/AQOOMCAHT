@@ -1,0 +1,32 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000000;
+  height: 154px;
+  margin: 0 auto;
+  padding: 0 20px;
+  .footer_left {
+    .aqoom_logo {
+      width: 88px;
+      img {
+        width: 100%;
+      }
+    }
+    .aqoom_right {
+      color: #fff;
+      font-size: 11px;
+    }
+  }
+  .footer_right {
+    display: flex;
+    justify-content: space-around;
+    width: 300px;
+    a {
+      font-family: "muli-bold";
+      color: #fff;
+      font-size: 12px;
+      text-decoration: none;
+    }
+  }
+}

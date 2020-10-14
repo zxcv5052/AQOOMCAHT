@@ -1,10 +1,17 @@
 import React from 'react';
-import { Route , Switch, Router } from 'react-router-dom';
-import { Group } from '../pages';
+import { Route , Switch } from 'react-router-dom';
+import { Analytic , Group , Message , Member , Interaction , Setting , Home } from "../pages";
 
 function App() {
     return(
-        <Group />
+        <div>
+            <Route exact path="/" component={Home}/>
+            <Switch>
+                <Route path="/Home" component={Home}/>
+                <Route path="/Analytic" component={Analytic}/>
+                <Route path="/Group" component={Group}/>
+            </Switch>
+        </div>
     )
 }
 

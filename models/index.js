@@ -30,8 +30,8 @@ db.Chat_greeting = require("./Chat/Greeting")(sequelize, Sequelize);
 db.Chat_Timezone = require("./Chat/Timezone")(sequelize, Sequelize);
 db.Chat_Bot_Acitivity = require('./Chat/Chat_Bot_Activity')(sequelize,Sequelize);
 
-db.User_Chat_Personal = require('./User_Chat/User_Chat_Personal')(sequelize,Sequelize);
-db.User_Chat_Whitelist = require('./User_Chat/User_Chat_Whitelist')(sequelize,Sequelize);
+db.User_Chat_Personal = require('./User_Chat/Personal')(sequelize,Sequelize);
+db.User_Chat_Whitelist = require('./User_Chat/Whitelist')(sequelize,Sequelize);
 /**
  * SET Message Relation
  */

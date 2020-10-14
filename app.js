@@ -4,10 +4,11 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const swaggerDoc = require('./public/swaggerDoc');
-const optionsRouter = require('./routes/options');
-const messageRouter = require('./routes/message')
-const roomsRouter = require('./routes/rooms')
-const usersRouter = require('./routes/user');
+const jwtKey = require('./config/jwtkey.json');
+const settingsRouter = require('./routes/settings');
+const messageRouter = require('./routes/messages')
+const roomsRouter = require('./routes/interaction')
+const usersRouter = require('./routes/members');
 
 const { sequelize } = require('./models');
 
@@ -26,10 +27,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/users', usersRouter);
-app.use('/rooms', roomsRouter);
-app.use('/options', optionsRouter);
-app.use('/messages', messageRouter);
+app.set('jwt-secret', jwtKey.secret);
+
+
+// app.use('/users', usersRouter);
+// app.use('/rooms', roomsRouter);
+app.use('/setting', settingsRouter);
+// app.use('/messages', messageRouter);
 
 app.use(function(req, res, next) {
     next(createError(404));

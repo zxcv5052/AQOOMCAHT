@@ -1,7 +1,6 @@
-const db = require("../models");
+const { Message } = require("../models");
 const sequelize = require("sequelize");
 const Op = sequelize.Op;
-const Message = db.Message;
 const axios = require('axios').default
 const moment = require('moment')
 const CancelToken = axios.CancelToken;
@@ -64,6 +63,7 @@ exports.findByTypeDate = request => {
             })
     });
 };
+
 exports.sendReply = request => {
     // message send ( telegram api로 작성하면 됨. )
     return new Promise(async (resolve, reject) => {

@@ -1,0 +1,21 @@
+.header {
+  display: flex;
+  .navigate__top {
+    width: 90%;
+    display: flex;
+      .gf{
+        display: flex;
+        width: 90%;
+        background-color: white;
+      }
+      .u{
+        width: 10%;
+        float: right;
+        background-color: red;
+      }
+  }
+  .logo {
+    width: 10%;
+    background-color: black;
+  }
+}
