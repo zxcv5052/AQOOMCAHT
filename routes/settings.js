@@ -8,7 +8,7 @@ const upload = multer();
 const blackController = require('../controllers/blackList.controller');
 const greetController = require('../controllers/chat_greeting.controller');
 const whiteController = require('../controllers/userChatWhite.controller');
-const chat_faq = require('../controllers/chatFuntion');
+const functionController = require('../controllers/chatFuntion');
 const router = express.Router();
 
 //region Swagger setting/{chat_id}/blacklist-word
@@ -109,10 +109,10 @@ router.post('/:chat_id/blacklist-word', (req,res) => {
         })
 });
 
-//region Swagger DELETE setting/{chat_id}/blacklist-word/{id}
+//region Swagger DELETE setting/blacklist-word/{id}
 /**
  * @swagger
- * /setting/{chat_id}/blacklist-word/{id}
+ * /setting/blacklist-word/{id}:
  *  delete:
  *     tags:
  *     - "BlackListWords"
@@ -136,7 +136,7 @@ router.post('/:chat_id/blacklist-word', (req,res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.delete('/{chat_id}/blacklist-word/:id', (req, res) =>{
+router.delete('/blacklist-word/:id', (req, res) =>{
     const request = {
         id :req.params.id
     }
@@ -153,10 +153,10 @@ router.delete('/{chat_id}/blacklist-word/:id', (req, res) =>{
         })
 });
 
-//region Swagger /options/whitelist/user/{chat_id}
+//region Swagger setting/{chat_id}/whitelist-user
 /**
  * @swagger
- * /options/whitelist/user/{chat_id}:
+ * /setting/{chat_id}/whitelist-user:
  *   get:
  *     tags:
  *     - "WhiteListUsers"
@@ -185,11 +185,11 @@ router.delete('/{chat_id}/blacklist-word/:id', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.get('/whitelist/user/:chat_id', (req, res) => {
+router.get('/:chat_id/whitelist-user', (req, res) => {
     const request = {
         chat_id : req.params.chat_id
     };
-    user_chat_whitelist.findByChatId(request)
+    whiteController.findByChatId(request)
         .then(result=>{
             res.status(200).send(result)
         })
@@ -198,25 +198,26 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
         })
 });
 
-//region Swagger POST /options/whitelist/user
+//region Swagger POST setting/{chat_id}/whitelist-user
 /**
  * @swagger
- * /options/whitelist/user:
+ * /setting/{chat_id}/whitelist-user:
  *   post:
  *     tags:
  *     - "WhiteListUsers"
  *     parameters:
- *      - in: body
- *        name: user&chat
+ *      - name: chat_id
+ *        in : path
  *        schema:
- *          type: object
- *          properties:
- *              user_id:
- *                  type: integer
- *                  required: true
- *              chat_id:
- *                  type: integer
- *                  required: true
+ *          type: integer
+ *      - in: body
+ *        name: user_id
+ *        schema:
+ *              type: object
+ *              properties:
+ *                  user_id:
+ *                      type: integer
+ *                      required: true
  *     description: Create White List User
  *     produces:
  *      - application/json
@@ -233,12 +234,12 @@ router.get('/whitelist/user/:chat_id', (req, res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.post('/whitelist/user', (req, res) => {
+router.post('/:chat_id/whitelist-user', (req, res) => {
     const request = {
         user_id : req.body.user_id,
-        chat_id : req.body.chat_id
+        chat_id : req.params.chat_id
     }
-    user_chat_whitelist.create(request)
+    whiteController.create(request)
         .then(()=>{
             res.status(200).send("ok");
         })
@@ -247,10 +248,10 @@ router.post('/whitelist/user', (req, res) => {
         })
 });
 
-//region Swagger DELETE /options/blacklist/words/:blacklist_seq
+//region Swagger DELETE setting/whitelist-user/{id}
 /**
  * @swagger
- * /options/whitelist/user/{whitelist_seq}:
+ * /setting/whitelist-user/{id}:
  *  delete:
  *     tags:
  *     - "WhiteListUsers"
@@ -274,23 +275,27 @@ router.post('/whitelist/user', (req, res) => {
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.delete('/whitelist/user/:seq', (req, res) =>{
+router.delete('/whitelist-user/:id', (req, res) =>{
     const request = {
-        seq : req.params.seq
+        id : req.params.id
     };
-    user_chat_whitelist.delete(request)
-        .then(()=>{
-            res.status(200).send("ok")
+    whiteController.delete(request)
+        .then(result =>{
+            if(result !== undefined){
+                res.status(200).send("ok");
+            }else{
+                res.status(204).send("empty");
+            }
         })
         .catch(err=>{
             res.status(500).send("false")
         })
 });
 
-//region Swagger GET /options/greeting/{chat_id}
+//region Swagger GET setting/{chat_id}/greeting
 /**
  * @swagger
- * /options/greeting/{chat_id}:
+ * /setting/{chat_id}/greeting:
  *   get:
  *     tags:
  *     - "Greetings"
@@ -319,12 +324,12 @@ router.delete('/whitelist/user/:seq', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.get('/greeting/:chat_id', (req, res) =>{
+router.get('/:chat_id/greeting', (req, res) =>{
     const request = {
-        seq : req.params.chat_id
+        chat_id : req.params.chat_id
     };
     greetController.findByChatId(request)
-        .then((result)=>{
+        .then( result => {
             if(result === undefined) res.status(204).seq("false");
             else res.status(200).send(result);
         })
@@ -332,10 +337,10 @@ router.get('/greeting/:chat_id', (req, res) =>{
             res.status(500).send(err);
         })
 })
-//region Swagger POST /options/greeting
+//region Swagger POST /setting/{chat_id}/greeting
 /**
  * @swagger
- * /options/greeting:
+ * /setting/{chat_id}/greeting:
  *   post:
  *     tags:
  *     - "Greetings"
@@ -351,7 +356,7 @@ router.get('/greeting/:chat_id', (req, res) =>{
  *      - in: formData
  *        name: button
  *        type: string
- *      - in: formData
+ *      - in: path
  *        name: chat_id
  *        type: integer
  *     description: Create Greeting Message
@@ -370,11 +375,11 @@ router.get('/greeting/:chat_id', (req, res) =>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.post('/greeting',upload.single('greeting_image'), async (req,res)=>{
+router.post('/:chat_id/greeting',upload.single('greeting_image'), async (req,res)=>{
     const request = {
         greeting_text: req.body.greeting_text,
         button: req.body.button,
-        chat_id: req.body.chat_id
+        chat_id: req.params.chat_id
     }
     uploading(req.file).then(result=>{
         if(result!==undefined) {
@@ -391,10 +396,10 @@ router.post('/greeting',upload.single('greeting_image'), async (req,res)=>{
 
     });
 });
-//region Swagger DELETE /options/greeting/:greeting_seq
+//region Swagger DELETE setting/greeting/{id}
 /**
  * @swagger
- * /options/greeting/{greeting_seq}:
+ * /setting/greeting/{id}:
  *  delete:
  *     tags:
  *     - "Greetings"
@@ -431,11 +436,11 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
             res.status(500).send("false")
         })
 })
-//region Swagger PUT /options/greeting
+//region Swagger PUT setting/greeting/{id}
 /**
  * @swagger
- * /options/greeting:
- *   put:
+ * /setting/greeting/{id}:
+ *   patch:
  *     tags:
  *     - "Greetings"
  *     consumes:
@@ -471,9 +476,9 @@ router.delete('/greeting/:greeting_seq', (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.put('/greeting', (req,res)=>{
+router.put('/greeting/{greeting_seq}', (req,res)=>{
     const request = {
-        greeting_seq: req.body.greeting_seq,
+        greeting_seq: req.params.greeting_seq,
         greeting_text: req.body.greeting_text,
         button: req.body.button,
         is_active: req.body.is_active
@@ -496,14 +501,58 @@ router.put('/greeting', (req,res)=>{
     });
 });
 
-
-//region Swagger POST /options/faq
+//region Swagger GET setting/{chat_id}/function
 /**
  * @swagger
- * /options/faq:
+ * /setting/{chat_id}/function:
+ *   get:
+ *     tags:
+ *     - "Function"
+ *     parameters:
+ *       - name: chat_id
+ *         in : path
+ *         schema:
+ *           type: integer
+ *     description: Get Function Info from Chatting ID
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *              $ref: '#/definitions/chat_function'
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.get('/:chat_id/function', (req, res) =>{
+    const request = {
+        chat_id : req.params.chat_id
+    };
+    functionController.findByChat(request)
+        .then( result => {
+            if(result === undefined) res.status(204).seq("false");
+            else res.status(200).send(result);
+        })
+        .catch(err=>{
+            res.status(500).send(err);
+        })
+})
+//region Swagger POST /setting/{chat_id}/function/
+/**
+ * @swagger
+ * /setting/{chat_id}/function:
  *   post:
  *     tags:
- *     - "FAQ"
+ *     - "Function"
  *     consumes:
  *          - multipart/form-data
  *     parameters:
@@ -522,10 +571,10 @@ router.put('/greeting', (req,res)=>{
  *      - in: formData
  *        name: button
  *        type: string
- *      - in: formData
+ *      - in: path
  *        name: chat_id
  *        type: integer
- *     description: Create FAQ
+ *     description: Create Function
  *     produces:
  *      - application/json
  *     responses:
@@ -541,22 +590,21 @@ router.put('/greeting', (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
+router.post('/:chat_id/function',upload.single('response_content_image'), async (req,res)=>{
     const request = {
         request_content_text: req.body.request_content_text,
         response_content_text : req.body.response_content_text,
         response_image_type: req.body.response_image_type,
         button: req.body.button,
-        chat_id: req.body.chat_id
+        chat_id: req.params.chat_id
     }
     request["request_content_text"] = '!'+request.request_content_text;
-    console.log(req.file);
     uploading(req.file)
         .then(result=>{
         if(result!==undefined) {
             request['response_content_image'] = result;
         }
-        chat_faq.create(request)
+        functionController.create(request)
             .then(()=>{
                 res.status(200).send("ok")
             })
@@ -569,17 +617,17 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
     });
 });
 
-//region Swagger PUT /options/faq
+//region Swagger PUT /setting/function/{id}
 /**
  * @swagger
- * /options/faq:
+ * /setting/function/{id}:
  *   put:
  *     tags:
- *     - "FAQ"
+ *     - "Function"
  *     consumes:
  *      - multipart/form-data
  *     parameters:
- *      - in: formData
+ *      - in: path
  *        name: faq_seq
  *        type: integer
  *      - in: formData
@@ -600,7 +648,7 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
  *      - in: formData
  *        name: is_active
  *        type: boolean
- *     description: Update FAQ
+ *     description: Update Function
  *     produces:
  *      - application/json
  *     responses:
@@ -616,23 +664,21 @@ router.post('/faq',upload.single('response_content_image'), async (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.put('/faq', (req,res)=>{
+router.put('/function/:faq_seq', (req,res)=>{
     const request = {
-        faq_seq: req.body.faq_seq,
+        faq_seq: req.params.faq_seq,
         request_content_text: req.body.request_content_text,
         response_content_text : req.body.response_content_text,
         response_image_type: req.body.response_image_type,
         button: req.body.button,
         is_active: req.body.is_active
     };
-    console.log("hihihii")
-    console.log(req.file)
     uploading(req.file)
         .then(result=>{
             if(result!==undefined) {
                 request['response_content_image'] = result;
             }
-            chat_faq.update(request)
+            functionController.update(request)
                 .then(()=>{
                     if(result === undefined) res.status(204).send();
                     else res.status(200).send("ok")
@@ -646,18 +692,18 @@ router.put('/faq', (req,res)=>{
     });
 });
 
-//region Swagger DELETE /options/faq/:faq_seq
+//region Swagger DELETE /setting/function/{faq_seq}
 /**
  * @swagger
- * /options/faq/{faq_seq}:
+ * /setting/function/{faq_seq}:
  *  delete:
  *     tags:
- *     - "FAQ"
+ *     - "Function"
  *     parameters:
  *       - name: faq_seq
  *         in : path
  *         type: integer
- *     description: Delete FAQ
+ *     description: Delete Function
  *     produces:
  *      - application/json
  *     responses:
@@ -673,11 +719,11 @@ router.put('/faq', (req,res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.delete('/greeting/:greeting_seq', (req,res)=>{
+router.delete('/function/:greeting_seq', (req,res)=>{
     const request = {
         greeting_seq : req.body.faq_seq
     };
-    chat_faq.delete(request)
+    functionController.delete(request)
         .then(result=>{
             if(result === undefined) res.status(204).send();
             else res.status(200).send("ok");

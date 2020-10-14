@@ -1,11 +1,11 @@
-const { Chat_FAQ: ChatFuntion } = require("../models");
+const { Chat_FAQ: ChatFunction } = require("../models");
 
 exports.create = request=>{
     return new Promise(async (resolve, reject) => {
 
         if(request.request_content_text.trim() === '!' || (request.response_content_text === '' && request.response_content_image === ''))
             reject();
-        ChatFuntion.create(request)
+        ChatFunction.create(request)
             .then(result=>{
                 resolve(result);
             })
@@ -17,7 +17,7 @@ exports.create = request=>{
 
 exports.findByChat = request =>{
     return new Promise(async (resolve, reject) => {
-        ChatFuntion.findAll({
+        ChatFunction.findAll({
             where:{
                 chat_id: request.chat_id
             }
@@ -33,7 +33,7 @@ exports.findByChat = request =>{
 
 exports.update = request =>{
     return new Promise(async (resolve, reject) => {
-        ChatFuntion.update({
+        ChatFunction.update({
             where:{
                 chat_id: request.chat_id
             },
@@ -52,7 +52,7 @@ exports.update = request =>{
 
 exports.delete = request=>{
     return new Promise(async (resolve, reject) => {
-        ChatFuntion.delete({
+        ChatFunction.delete({
             where:{
                 chat_id: request.chat_id
             }

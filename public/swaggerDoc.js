@@ -188,7 +188,7 @@ const options = {
                         }
                     }
                 },
-                'chat_faq': {
+                'chat_function': {
                     type: 'object',
                     properties: {
                         faq_seq : {

@@ -27,6 +27,7 @@ exports.findByChatIdUserId = request =>{
                     {chat_id : request.chat_id, user_id : request.user_id}
             })
             .then(data => {
+                if(data === undefined) resolve();
                 resolve(data);
             })
             .catch(err => {
@@ -40,7 +41,7 @@ exports.findByChatId = (request) => {
     return new Promise((resolve, reject) => {
         UserChatWhiteController.findAll({where : {chat_id : chat_id}})
             .then(data => {
-                if(data.length === 0 ) resolve();
+                if(data === undefined) resolve();
                 resolve(data);
             })
             .catch(err => {
@@ -58,7 +59,7 @@ exports.delete = (request) => {
                 if (num === 1) {
                     resolve();
                 } else {
-                    reject(`Cannot delete Url. Maybe Url was not found!`);
+                    resolve(`Cannot delete Url. Maybe Url was not found!`);
                 }
             })
             .catch(err => {

@@ -12,7 +12,7 @@ exports.create = request => {
     return new Promise(async (resolve, reject) => {
         if(words.trim() === "" || words.word === undefined) return reject(400);
         Chat_blacklist.create(words)
-            .then(data => {
+            .then(() => {
                 resolve();
             })
             .catch(()=> {
@@ -30,7 +30,7 @@ exports.findByChatId = request => {
             attributes: ['word']
         })
             .then(data => {
-                if(data.length === 0) resolve();
+                if(data === undefined) resolve();
                 else resolve(data);
             })
             .catch(err => {
