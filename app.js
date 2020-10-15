@@ -6,8 +6,9 @@ const logger = require('morgan');
 const swaggerDoc = require('./public/swaggerDoc');
 const jwtKey = require('./config/jwtkey.json');
 const settingsRouter = require('./routes/settings');
+const functionRouter = require('./routes/function');
 const messageRouter = require('./routes/messages')
-const roomsRouter = require('./routes/interaction')
+const interactionRouter = require('./routes/interaction')
 const usersRouter = require('./routes/members');
 
 const { sequelize } = require('./models');
@@ -31,8 +32,9 @@ app.set('jwt-secret', jwtKey.secret);
 
 
 // app.use('/users', usersRouter);
-// app.use('/rooms', roomsRouter);
+app.use('/interaction', interactionRouter);
 app.use('/setting', settingsRouter);
+app.use('/function', functionRouter);
 // app.use('/messages', messageRouter);
 
 app.use(function(req, res, next) {

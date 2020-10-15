@@ -4,19 +4,14 @@ const router = express.Router();
 const Chat = require('../controllers/chat.controller')
 
 
-//region Swagger GET /rooms/{user_id}
+//region Swagger GET /groups
 /**
  * @swagger
- * /rooms/{user_id}:
+ * /groups :
  *   get:
  *     tags:
  *     - "Chats"
- *     parameters:
- *       - name: user_id
- *         in : path
- *         schema:
- *           type: integer
- *     description: Get Chat Rooms from User ID
+ *     description: Get Chat Group from User ID
  *     produces:
  *      - application/json
  *     responses:
@@ -38,9 +33,9 @@ const Chat = require('../controllers/chat.controller')
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.get('/:user_id', (req,res)=>{
+router.get('/', (req,res)=>{
     const request = {
-        user_id: req.params.user_id
+        user_id: req.headers.user_id
     };
     Chat.findByUser(request)
         .then(result=>{
@@ -49,6 +44,12 @@ router.get('/:user_id', (req,res)=>{
         .catch(()=>{
             res.status(500).send();
         });
+});
+router.get('/login', (req, res)=>{
+    res.cookie(
+        '_id' , { id: 'blabla', name: 'blabk', authorize : true}
+    )
+    res.send('ok');
 });
 
 //region Swagger GET /rooms/info/{chat_id}
