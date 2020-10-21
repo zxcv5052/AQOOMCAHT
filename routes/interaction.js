@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Chat = require('../controllers/chat.controller')
+const chatController = require('../controllers/chat.controller')
+const greetController = require('../controllers/chat_greeting.controller');
 
 
 //region Swagger GET /groups
@@ -37,7 +38,7 @@ router.get('/', (req,res)=>{
     const request = {
         user_id: req.headers.user_id
     };
-    Chat.findByUser(request)
+    chatController.findByUser(request)
         .then(result=>{
             res.status(200).send(result)
         })
@@ -45,26 +46,21 @@ router.get('/', (req,res)=>{
             res.status(500).send();
         });
 });
-router.get('/login', (req, res)=>{
-    res.cookie(
-        '_id' , { id: 'blabla', name: 'blabk', authorize : true}
-    )
-    res.send('ok');
-});
 
-//region Swagger GET /rooms/info/{chat_id}
+
+//region Swagger GET interaction/{chat_id}/greeting
 /**
  * @swagger
- * /rooms/info/{chat_id}:
+ * /interaction/{chat_id}/greeting:
  *   get:
  *     tags:
- *     - "Chats"
+ *     - "Interaction/Greetings"
  *     parameters:
  *       - name: chat_id
  *         in : path
  *         schema:
  *           type: integer
- *     description: Get Chat info from Chatting ID
+ *     description: Get Greeting Info from Chatting ID
  *     produces:
  *      - application/json
  *     responses:
@@ -73,7 +69,7 @@ router.get('/login', (req, res)=>{
  *         schema:
  *           type: array
  *           items:
- *             $ref: '#/definitions/chat'
+ *              $ref: '#/definitions/greetController'
  *       204:
  *         $ref: '#/components/res/NoContent'
  *       403:
@@ -84,18 +80,19 @@ router.get('/login', (req, res)=>{
  *         $ref: '#/components/res/BadRequest'
  */
 //endregion
-router.get('/info/:chat_id', (req,res)=>{
+router.get('/interaction/:chat_id/greeting', (req, res) =>{
     const request = {
-        chat_id: req.params.chat_id
+        chat_id : req.params.chat_id
     };
-    Chat.findByChat(request)
-        .then(result=>{
-            res.status(200).send(result)
+    greetController.findByChatId(request)
+        .then( result => {
+            if(result === undefined) res.status(204).seq("false");
+            else res.status(200).send(result);
         })
-        .catch(()=>{
-            res.status(500).send();
-        });
-});
+        .catch(err=>{
+            res.status(500).send(err);
+        })
+})
 
 //region Swagger PUT /rooms/restrict/func/
 /**
@@ -157,7 +154,7 @@ router.put('/restrict/func', (req,res) =>{
         anti_flood: req.body.anti_flood,
         anti_command: req.body.anti_command
     };
-    Chat.updateForRestriction(request)
+    chatController.updateForRestriction(request)
         .then(result=>{
             if(result===undefined) res.status(204).send();
             else res.status(200).send();
@@ -212,7 +209,7 @@ router.put('/restrict/limit', (req,res)=>{
         restrict_limit: req.body.restrict_limit,
         restrict_time: req.body.restrict_time,
     }
-    Chat.updateForRestrictionLimit(request)
+    chatController.updateForRestrictionLimit(request)
         .then(result=>{
             if(result===undefined) res.status(204).send();
             else res.status(200).send()
@@ -221,7 +218,5 @@ router.put('/restrict/limit', (req,res)=>{
             res.status(500).send();
         })
 });
-
-
 
 module.exports = router;

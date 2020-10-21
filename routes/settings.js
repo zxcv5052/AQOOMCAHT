@@ -1,13 +1,59 @@
 'use strict'
 const express = require('express');
 const { format } = require('util');
-
 const multer = require('multer');
+
 const upload = multer();
+const Chat = require('../controllers/chat.controller')
 const blackController = require('../controllers/blackList.controller');
 const greetController = require('../controllers/chat_greeting.controller');
 const whiteController = require('../controllers/userChatWhite.controller');
 const router = express.Router();
+
+//region Swagger GET setting/{chat_id}/filter
+/**
+ * @swagger
+ * /setting/{chat_id}/filter:
+ *   get:
+ *     tags:
+ *     - "Setting/Filter"
+ *     parameters:
+ *       - name: chat_id
+ *         in : path
+ *         schema:
+ *           type: integer
+ *     description: Get Chat Filters.
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           type: array
+ *           items:
+ *             $ref: '#/definitions/chat'
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.get('/:chat_id/filter', (req,res)=>{
+    const request = {
+        chat_id: req.params.chat_id
+    };
+    Chat.findByChat(request)
+        .then(result=>{
+            res.status(200).send(result)
+        })
+        .catch(()=>{
+            res.status(500).send();
+        });
+});
 
 //region Swagger setting/{chat_id}/blacklist-word
 /**
@@ -15,7 +61,7 @@ const router = express.Router();
  * /setting/{chat_id}/blacklist-word:
  *   get:
  *     tags:
- *     - "BlackListWords"
+ *     - "Setting/BlackListWords"
  *     parameters:
  *       - name: chat_id
  *         in : path
@@ -63,7 +109,7 @@ router.get('/:chat_id/blacklist-word', (req,res) => {
  * /setting/{chat_id}/blacklist-word:
  *   post:
  *     tags:
- *     - "BlackListWords"
+ *     - "Setting/BlackListWords"
  *     parameters:
  *       - name: chat_id
  *         in : path
@@ -113,7 +159,7 @@ router.post('/:chat_id/blacklist-word', (req,res) => {
  * /setting/blacklist-word/{id}:
  *  delete:
  *     tags:
- *     - "BlackListWords"
+ *     - "Setting/BlackListWords"
  *     parameters:
  *       - name: id
  *         in : path
@@ -157,7 +203,7 @@ router.delete('/blacklist-word/:id', (req, res) =>{
  * /setting/{chat_id}/whitelist-user:
  *   get:
  *     tags:
- *     - "WhiteListUsers"
+ *     - "Setting/WhiteListUsers"
  *     parameters:
  *       - name: chat_id
  *         in : path
@@ -202,7 +248,7 @@ router.get('/:chat_id/whitelist-user', (req, res) => {
  * /setting/{chat_id}/whitelist-user:
  *   post:
  *     tags:
- *     - "WhiteListUsers"
+ *     - "Setting/WhiteListUsers"
  *     parameters:
  *      - name: chat_id
  *        in : path
@@ -252,7 +298,7 @@ router.post('/:chat_id/whitelist-user', (req, res) => {
  * /setting/whitelist-user/{id}:
  *  delete:
  *     tags:
- *     - "WhiteListUsers"
+ *     - "Setting/WhiteListUsers"
  *     parameters:
  *       - name: whitelist_seq
  *         in : path
@@ -290,51 +336,6 @@ router.delete('/whitelist-user/:id', (req, res) =>{
         })
 });
 
-//region Swagger GET setting/{chat_id}/greeting
-/**
- * @swagger
- * /setting/{chat_id}/greeting:
- *   get:
- *     tags:
- *     - "Greetings"
- *     parameters:
- *       - name: chat_id
- *         in : path
- *         schema:
- *           type: integer
- *     description: Get Greeting Info from Chatting ID
- *     produces:
- *      - application/json
- *     responses:
- *       200:
- *         description: OK
- *         schema:
- *           type: array
- *           items:
- *              $ref: '#/definitions/greetController'
- *       204:
- *         $ref: '#/components/res/NoContent'
- *       403:
- *         $ref: '#/components/res/Forbidden'
- *       404:
- *         $ref: '#/components/res/NotFound'
- *       500:
- *         $ref: '#/components/res/BadRequest'
- */
-//endregion
-router.get('/:chat_id/greeting', (req, res) =>{
-    const request = {
-        chat_id : req.params.chat_id
-    };
-    greetController.findByChatId(request)
-        .then( result => {
-            if(result === undefined) res.status(204).seq("false");
-            else res.status(200).send(result);
-        })
-        .catch(err=>{
-            res.status(500).send(err);
-        })
-})
 //region Swagger POST /setting/{chat_id}/greeting
 /**
  * @swagger

@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Members = require('../controllers/user.controller')
-const User_chat_personal = require('../controllers/userChatPer.controller')
+const Users = require('../controllers/user.controller')
 //region Swagger GET /users/{user_id} 유저에 대한 정보 가져 오기
 /**
  * @swagger
@@ -15,7 +14,7 @@ const User_chat_personal = require('../controllers/userChatPer.controller')
  *         in : path
  *         schema:
  *           type: integer
- *     description: Get Members from Members ID
+ *     description: Get Users from Users ID
  *     produces:
  *      - application/json
  *     responses:
@@ -37,7 +36,7 @@ router.get('/:user_id', (req,res)=>{
     const request = {
         user_id: req.params.user_id
     };
-    Members.findByPk(request)
+    Users.findByPk(request)
         .then(result=>{
             if(result===undefined) res.status(204).send()
             else res.status(200).send(result)
@@ -47,83 +46,16 @@ router.get('/:user_id', (req,res)=>{
             res.status(500).send(err);
         });
 });
-//region Swagger GET users/rooms/{chat_id} 채팅방에 존재하는 유저들 가져오기.
+//region Swagger DELETE users/logout
 /**
  * @swagger
- * /users/rooms/{chat_id}:
- *   get:
- *     tags:
- *     - "Users"
- *     parameters:
- *       - name: chat_id
- *         in : path
- *         schema:
- *           type: integer
- *     description: Get Users <JOIN> from Chat ID
- *     produces:
- *      - application/json
- *     responses:
- *       200:
- *         description: OK
- *         schema:
- *          type: array
- *          items:
- *              properties:
- *                  seq:
- *                      type: integer
- *                  restriction_date:
- *                      type: string
- *                  is_bot:
- *                      type: boolean
- *                  is_admin:
- *                      type: boolean
- *                  Members:
- *                      type: object
- *                      properties:
- *                          user_id:
- *                              type: integer
- *                          first_name:
- *                              type: string
- *                          last_name:
- *                              type: string
- *                          user_name:
- *                              type: string
- *                          warning_pt:
- *                              type: integer
- *       204:
- *         $ref: '#/components/res/NoContent'
- *       403:
- *         $ref: '#/components/res/Forbidden'
- *       404:
- *         $ref: '#/components/res/NotFound'
- *       500:
- *         $ref: '#/components/res/BadRequest'
- */
-//endregion
-router.get('/rooms/:chat_id', (req,res)=>{
-    const request = {
-        chat_id : req.params.chat_id
-    }
-    User_chat_personal.findByChat(request)
-        .then(result=>{
-            res.status(200).send(result);
-        })
-        .catch(err=>{
-            console.log(err);
-            res.status(500).send();
-        })
-})
-
-//region Swagger DELETE users/rooms/ 채팅방에 있는 특정 인물 밴
-/**
- * @swagger
- * /users/rooms/:
+ * /users/logout :
  *   delete:
  *     tags:
  *     - "Users"
  *     parameters:
  *
- *     description: Delete Members ( user_chat_personal )
+ *     description: Logout Users
  *     produces:
  *      - application/json
  *     responses:
@@ -140,8 +72,59 @@ router.get('/rooms/:chat_id', (req,res)=>{
  */
 //endregion
 
-router.delete('/', (req,res) =>{
+router.delete('/logout', (req,res) =>{
 
+});
+
+//region Swagger POST users/login
+/**
+ * @swagger
+ * /users/login :
+ *   post:
+ *     tags:
+ *     - "Users"
+ *     parameters:
+ *      - in: body
+ *        name: user
+ *        schema:
+ *          type: object
+ *          properties:
+ *              user_id:
+ *                  type: integer
+ *                  required: true
+ *              username:
+ *                  type: string
+ *              first_name:
+ *                  type: string
+ *              last_name:
+ *                  type: string
+ *              photo_url:
+ *                  type: string
+ *
+ *     description: Login Users
+ *     produces:
+ *      - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *       204:
+ *         $ref: '#/components/res/NoContent'
+ *       403:
+ *         $ref: '#/components/res/Forbidden'
+ *       404:
+ *         $ref: '#/components/res/NotFound'
+ *       500:
+ *         $ref: '#/components/res/BadRequest'
+ */
+//endregion
+router.post('/login', (req,res) =>{
+    const request = {
+        user_id: req.body.id,
+        user_name: req.body.username,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        photo_url: req.body.photo_url
+    }
 });
 
 
