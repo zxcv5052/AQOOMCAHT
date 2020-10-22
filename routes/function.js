@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const functionController = require('../controllers/chatFuntion');
+const functionController = require('../controllers/chatFuntion.controller');
 const { uploadFunction } = require('../public/functions');
 
 const multer = require('multer');
@@ -53,10 +53,10 @@ router.get('/:chat_id', (req, res) =>{
             res.status(500).send(err);
         })
 })
-//region Swagger POST {chat_id}/function/
+//region Swagger POST function/{chat_id}
 /**
  * @swagger
- * /{chat_id}:
+ * /function/{chat_id}:
  *   post:
  *     tags:
  *     - "Function"
@@ -124,10 +124,10 @@ router.post('/:chat_id',upload.single('response_content_image'), async (req,res)
     });
 });
 
-//region Swagger PUT function/{id}
+//region Swagger PUT /function/{fn_seq}
 /**
  * @swagger
- * /function/{id}:
+ * /function/{fn_seq} :
  *   put:
  *     tags:
  *     - "Function"

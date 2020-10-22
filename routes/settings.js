@@ -6,7 +6,7 @@ const multer = require('multer');
 const upload = multer();
 const Chat = require('../controllers/chat.controller')
 const blackController = require('../controllers/blackList.controller');
-const greetController = require('../controllers/chat_greeting.controller');
+const greetController = require('../controllers/chatGreeting.controller');
 const whiteController = require('../controllers/userChatWhite.controller');
 const router = express.Router();
 

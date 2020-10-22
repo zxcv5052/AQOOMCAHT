@@ -9,8 +9,6 @@ const authController = require('../controllers/auth/auth.controller')
  *   delete:
  *     tags:
  *     - "Auth"
- *     parameters:
- *
  *     description: Logout Users
  *     produces:
  *      - application/json
@@ -29,7 +27,13 @@ const authController = require('../controllers/auth/auth.controller')
 //endregion
 
 router.delete('/logout', (req,res) =>{
-
+    try{
+        res.clearCookie("SID");
+        res.clearCookie("PID");
+        res.redirect(200, '/');
+    }catch (e) {
+        console.log(e);
+    }
 });
 
 //region Swagger POST auth/login
@@ -88,6 +92,7 @@ router.post('/login', (req,res) =>{
             res.cookie('SID', result, {
                 httpOnly: true
             });
+            res.cookie('PID', request.user_id, { httpOnly: true})
             res.send("ok");
         })
         .catch(err=>{
@@ -95,7 +100,5 @@ router.post('/login', (req,res) =>{
             res.send("false");
         })
 });
-
-
 
 module.exports = router;

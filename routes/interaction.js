@@ -2,51 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const chatController = require('../controllers/chat.controller')
-const greetController = require('../controllers/chat_greeting.controller');
-
-
-//region Swagger GET /groups
-/**
- * @swagger
- * /groups :
- *   get:
- *     tags:
- *     - "Chats"
- *     description: Get Chat Group from User ID
- *     produces:
- *      - application/json
- *     responses:
- *       200:
- *         description: OK
- *         schema:
- *           type: array
- *           items:
- *              properties:
- *                   chat_id:
- *                      type: integer
- *       204:
- *         $ref: '#/components/res/NoContent'
- *       403:
- *         $ref: '#/components/res/Forbidden'
- *       404:
- *         $ref: '#/components/res/NotFound'
- *       500:
- *         $ref: '#/components/res/BadRequest'
- */
-//endregion
-router.get('/', (req,res)=>{
-    const request = {
-        user_id: req.headers.user_id
-    };
-    chatController.findByUser(request)
-        .then(result=>{
-            res.status(200).send(result)
-        })
-        .catch(()=>{
-            res.status(500).send();
-        });
-});
-
+const greetController = require('../controllers/chatGreeting.controller');
 
 //region Swagger GET interaction/{chat_id}/greeting
 /**

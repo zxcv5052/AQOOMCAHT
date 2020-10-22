@@ -8,33 +8,37 @@ const UserChatList = require('../controllers/user_chat_personal');
 
 // URL & Forward && <Command?>
 exports.ListenText = async (bot,ctx) =>{
-    const messageText = ctx.message.text;
-    const originalChatId = ctx.message.chat.id;
-    const user_id = ctx.message.from.id;
-    const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
+    try {
+        const messageText = ctx.message.text;
+        const originalChatId = ctx.message.chat.id;
+        const user_id = ctx.message.from.id;
+        const chatMember = await bot.telegram.getChatMember(originalChatId, user_id);
 
-    let request = await makeRequest(ctx, messageText, chatMember);
+        let request = await makeRequest(ctx, messageText, chatMember);
 
-    request['message_type'] = ctx.message.reply_to_message ? "reply_to_text" : "text";
-    request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_text";
-    request['is_forward'] = ctx.message.forward_from !== undefined;
+        request['message_type'] = ctx.message.reply_to_message ? "reply_to_text" : "text";
+        request['message_type'] = ctx.message.forward_from === undefined ? request.message_type : "forward_text";
+        request['is_forward'] = ctx.message.forward_from !== undefined;
 
-    if(ctx.message.entities !== undefined) request["entity"] = JSON.stringify(ctx.message.entities);
+        if (ctx.message.entities !== undefined) request["entity"] = JSON.stringify(ctx.message.entities);
 
-    const chatRules = await Chat.findByChat(request);
+        const chatRules = await Chat.findByChat(request);
 
-    // FAQ Function
-    await async function (){
-        if(ctx.message.text.indexOf('!') === 0 && (chatMember.status === 'creator' || chatMember.status === 'administer')){
-            request['chat_type'] = ctx.chat.type;
-            const isFAQ = await FAQ.customAndDefaultFAQ(request, ctx, chatRules, originalChatId, bot);
-            if(isFAQ) request['message_type'] = 'call_faq';
-        }
-    }();
+        // FAQ Function
+        await async function () {
+            if (ctx.message.text.indexOf('!') === 0 && (chatMember.status === 'creator' || chatMember.status === 'administer')) {
+                request['chat_type'] = ctx.chat.type;
+                const isFAQ = await FAQ.customAndDefaultFAQ(request, ctx, chatRules, originalChatId, bot);
+                if (isFAQ) request['message_type'] = 'call_faq';
+            }
+        }();
 
-    await Common.chatAndUserCreate(request);
-    request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
-    await Common.saveMessage(request);
+        await Common.chatAndUserCreate(request);
+        request = await checkRestriction(request, ctx, originalChatId, chatRules, bot);
+        await Common.saveMessage(request);
+    }catch(e){
+        console.log(e)
+    }
 }
 
 exports.ListenSticker = async (bot,ctx) =>{

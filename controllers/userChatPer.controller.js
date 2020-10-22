@@ -26,12 +26,12 @@ exports.findByChat = request =>{
     return new Promise((resolve, reject) => {
         User_Chat_Personal.findAll(
             {
-                attributes: ['seq','restriction_date','is_admin','is_bot','is_active'],
+                attributes: ['user_id','restriction_date','status'],
                 include: [
                     {
                         required: false,
                         model: User,
-                        attributes: ['user_id','first_name', 'last_name','user_name']
+                        attributes: ['is_bot','first_name', 'last_name','user_name']
                     }
                 ],
                 where: {chat_id: request.chat_id},
